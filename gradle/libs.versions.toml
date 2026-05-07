@@ -11,6 +11,15 @@ flexbox = "3.0.0"
 fragment = "1.8.9"
 documentfile = "1.1.0"
 
+# Jetpack Compose
+composeBom = "2025.05.00"
+composeActivity = "1.10.1"
+composeNavigation = "2.9.0"
+composeMaterial3 = "1.3.2"
+composeMaterial = "1.7.8"
+lifecycleCompose = "2.9.4"
+coil = "2.7.0"
+
 libarchive = "1.1.6"
 lyricViewx = "1.3.2"
 soraEditor = "0.24.4"
@@ -79,6 +88,34 @@ viewpager2 = "1.0.0"
 firebaseBom = "33.2.0"
 
 [libraries]
+
+# Jetpack Compose
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+compose-ui-util = { module = "androidx.compose.ui:ui-util" }
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-foundation-layout = { module = "androidx.compose.foundation:foundation-layout" }
+compose-material = { module = "androidx.compose.material:material", version.ref = "composeMaterial" }
+compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial3" }
+compose-material3-window-size = { module = "androidx.compose.material3:material3-window-size-class" }
+compose-runtime = { module = "androidx.compose.runtime:runtime" }
+compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
+compose-animation = { module = "androidx.compose.animation:animation" }
+compose-animation-core = { module = "androidx.compose.animation:animation-core" }
+compose-activity = { module = "androidx.activity:activity-compose", version.ref = "composeActivity" }
+compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
+compose-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleCompose" }
+compose-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleCompose" }
+compose-constraintlayout = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.1.1" }
+
+# Coil for image loading in Compose
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coil" }
+coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil" }
+coil-video = { module = "io.coil-kt:coil-video", version.ref = "coil" }
 
 activity-activity = { module = "androidx.activity:activity", version.ref = "activity" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
@@ -206,6 +243,20 @@ zxing-lite = { module = "com.github.jenly1314:zxing-lite", version.ref = "zxingL
 [bundles]
 coroutines = ["kotlinx-coroutines-core", "kotlinx-coroutines-android"]
 androidTest = ["androidx-espresso-core", "androidx-junit", "androidx-runner"]
+compose = [
+    "compose-bom",
+    "compose-ui",
+    "compose-ui-graphics",
+    "compose-ui-tooling-preview",
+    "compose-ui-util",
+    "compose-foundation",
+    "compose-material3",
+    "compose-activity",
+    "compose-navigation",
+    "compose-lifecycle-viewmodel",
+    "compose-lifecycle-runtime",
+    "coil-compose"
+]
 
 [plugins]
 
@@ -224,6 +275,7 @@ kotlin-noarg = { id = "org.jetbrains.kotlin.plugin.noarg", version.ref = "kotlin
 kotlin-sam = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
 kotlin-lombok = { id = "org.jetbrains.kotlin.plugin.lombok", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
 
