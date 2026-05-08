@@ -1,5 +1,6 @@
 package io.legado.app.ui.config
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
@@ -19,7 +20,10 @@ class ConfigActivity : VMBaseActivity<ActivityConfigBinding, ConfigViewModel>() 
         when (val configTag = intent.getStringExtra("configTag")) {
             ConfigTag.OTHER_CONFIG -> replaceFragment<OtherConfigFragment>(configTag)
             ConfigTag.THEME_CONFIG -> replaceFragment<ThemeConfigFragment>(configTag)
-            ConfigTag.BACKUP_CONFIG -> replaceFragment<BackupConfigFragment>(configTag)
+            ConfigTag.BACKUP_CONFIG -> {
+                startActivity(Intent(this, BackupRestoreActivity::class.java))
+                finish()
+            }
             ConfigTag.COVER_CONFIG -> replaceFragment<CoverConfigFragment>(configTag)
             ConfigTag.WELCOME_CONFIG -> replaceFragment<WelcomeConfigFragment>(configTag)
             else -> finish()

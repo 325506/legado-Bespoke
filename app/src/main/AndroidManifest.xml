@@ -301,6 +301,14 @@
         <activity
             android:name=".ui.book.bookmark.AllBookmarkActivity"
             android:launchMode="singleTop" />
+        <!-- 备份与恢复 -->
+        <activity
+            android:name=".ui.config.BackupRestoreActivity"
+            android:launchMode="singleTop" />
+        <!-- 导入本地书籍 -->
+        <activity
+            android:name=".ui.book.import.local.ImportBookComposeActivity"
+            android:launchMode="singleTop" />
         <!-- 缓存界面 -->
         <activity
             android:name=".ui.book.cache.CacheActivity"
