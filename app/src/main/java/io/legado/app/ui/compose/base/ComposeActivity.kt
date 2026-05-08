@@ -1,7 +1,7 @@
 package io.legado.app.ui.compose.base
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
@@ -14,7 +14,7 @@ abstract class ComposeActivity(
     theme: Theme = Theme.Auto,
     toolBarTheme: Theme = Theme.Auto,
     transparent: Boolean = false
-) : ComponentActivity() {
+) : AppCompatActivity() {
 
     protected abstract val themeMode: Theme
 
