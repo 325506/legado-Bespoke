@@ -26,7 +26,7 @@ import io.legado.app.ui.book.toc.rule.TxtTocRuleComposeActivity
 import io.legado.app.ui.config.BackupRestoreActivity
 import io.legado.app.ui.config.ConfigActivity
 import io.legado.app.ui.config.ConfigTag
-import io.legado.app.ui.dict.rule.DictRuleActivity
+import io.legado.app.ui.dict.rule.DictRuleComposeActivity
 import io.legado.app.ui.file.FileManageComposeActivity
 import io.legado.app.ui.main.MainFragmentInterface
 import io.legado.app.ui.replace.ReplaceRuleComposeActivity
@@ -147,7 +147,7 @@ class MyFragment() : BaseFragment(R.layout.fragment_my_config), MainFragmentInte
             when (preference.key) {
                 "bookSourceManage" -> startActivity<BookSourceActivity>()
                 "replaceManage" -> startActivity<ReplaceRuleComposeActivity>()
-                "dictRuleManage" -> startActivity<DictRuleActivity>()
+                "dictRuleManage" -> startActivity<DictRuleComposeActivity>()
                 "txtTocRuleManage" -> startActivity<TxtTocRuleComposeActivity>()
                 "bookmark" -> startActivity<AllBookmarkActivity>()
                 "setting" -> startActivity<ConfigActivity> {

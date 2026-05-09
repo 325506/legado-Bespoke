@@ -344,7 +344,12 @@
             android:hardwareAccelerated="true" />
         <!-- 字典管理 -->
         <activity
-            android:name=".ui.dict.rule.DictRuleActivity"
+            android:name=".ui.dict.rule.DictRuleComposeActivity"
+            android:configChanges="orientation|screenSize"
+            android:hardwareAccelerated="true" />
+        <!-- 编辑字典规则 -->
+        <activity
+            android:name=".ui.dict.edit.DictRuleEditComposeActivity"
             android:configChanges="orientation|screenSize"
             android:hardwareAccelerated="true" />
         <!-- 文件管理 -->
