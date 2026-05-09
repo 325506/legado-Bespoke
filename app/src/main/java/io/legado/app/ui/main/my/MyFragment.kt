@@ -29,7 +29,7 @@ import io.legado.app.ui.config.ConfigTag
 import io.legado.app.ui.dict.rule.DictRuleActivity
 import io.legado.app.ui.file.FileManageComposeActivity
 import io.legado.app.ui.main.MainFragmentInterface
-import io.legado.app.ui.replace.ReplaceRuleActivity
+import io.legado.app.ui.replace.ReplaceRuleComposeActivity
 import io.legado.app.utils.LogUtils
 import io.legado.app.utils.getPrefBoolean
 import io.legado.app.utils.observeEventSticky
@@ -146,7 +146,7 @@ class MyFragment() : BaseFragment(R.layout.fragment_my_config), MainFragmentInte
         override fun onPreferenceTreeClick(preference: Preference): Boolean {
             when (preference.key) {
                 "bookSourceManage" -> startActivity<BookSourceActivity>()
-                "replaceManage" -> startActivity<ReplaceRuleActivity>()
+                "replaceManage" -> startActivity<ReplaceRuleComposeActivity>()
                 "dictRuleManage" -> startActivity<DictRuleActivity>()
                 "txtTocRuleManage" -> startActivity<TxtTocRuleComposeActivity>()
                 "bookmark" -> startActivity<AllBookmarkActivity>()

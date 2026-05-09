@@ -18,7 +18,7 @@ import io.legado.app.ui.book.audio.AudioPlayActivity
 import io.legado.app.ui.video.VideoPlayerActivity
 import io.legado.app.ui.book.source.manage.BookSourceActivity
 import io.legado.app.ui.rss.source.manage.RssSourceActivity
-import io.legado.app.ui.replace.ReplaceRuleActivity
+import io.legado.app.ui.replace.ReplaceRuleComposeActivity
 import io.legado.app.ui.book.toc.rule.TxtTocRuleComposeActivity
 import io.legado.app.ui.browser.WebViewActivity
 
@@ -129,7 +129,7 @@ object NavigationHelper {
     }
 
     fun navigateToReplaceRuleManage(context: Context) {
-        val intent = Intent(context, ReplaceRuleActivity::class.java)
+        val intent = Intent(context, ReplaceRuleComposeActivity::class.java)
         context.startActivity(intent)
     }
 

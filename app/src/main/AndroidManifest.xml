@@ -244,7 +244,12 @@
             android:screenOrientation="behind" />
         <!-- 替换规则界面 -->
         <activity
-            android:name=".ui.replace.ReplaceRuleActivity"
+            android:name=".ui.replace.ReplaceRuleComposeActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="behind" />
+        <!-- 编辑替换规则 -->
+        <activity
+            android:name=".ui.replace.edit.ReplaceEditComposeActivity"
             android:launchMode="singleTop"
             android:screenOrientation="behind" />
         <!-- 书籍管理 -->
