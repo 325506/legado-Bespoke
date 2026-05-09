@@ -44,8 +44,8 @@ class TxtTocRuleViewModel(app: Application) : BaseViewModel(app) {
 
     fun toggleSelection(rule: TxtTocRule) {
         val current = _selection.value.toMutableSet()
-        if (current.contains(rule)) {
-            current.remove(rule)
+        if (current.any { it.id == rule.id }) {
+            current.removeIf { it.id == rule.id }
         } else {
             current.add(rule)
         }
@@ -75,7 +75,6 @@ class TxtTocRuleViewModel(app: Application) : BaseViewModel(app) {
     fun del(vararg txtTocRule: TxtTocRule) {
         execute {
             appDb.txtTocRuleDao.delete(*txtTocRule)
-            clearSelection()
         }
     }
 
@@ -125,8 +124,11 @@ class TxtTocRuleViewModel(app: Application) : BaseViewModel(app) {
         val selected = _selection.value
         if (selected.isEmpty()) return
         execute {
-            val array = selected.map { it.copy(enable = true) }.toTypedArray()
-            appDb.txtTocRuleDao.insert(*array)
+            val array = selected.map {
+                it.enable = true
+                it
+            }.toTypedArray()
+            appDb.txtTocRuleDao.update(*array)
         }
     }
 
@@ -134,8 +136,11 @@ class TxtTocRuleViewModel(app: Application) : BaseViewModel(app) {
         val selected = _selection.value
         if (selected.isEmpty()) return
         execute {
-            val array = selected.map { it.copy(enable = false) }.toTypedArray()
-            appDb.txtTocRuleDao.insert(*array)
+            val array = selected.map {
+                it.enable = false
+                it
+            }.toTypedArray()
+            appDb.txtTocRuleDao.update(*array)
         }
     }
 
