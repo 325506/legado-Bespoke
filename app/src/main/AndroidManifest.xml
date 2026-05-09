@@ -309,6 +309,14 @@
         <activity
             android:name=".ui.book.import.local.ImportBookComposeActivity"
             android:launchMode="singleTop" />
+        <!-- 文件管理 -->
+        <activity
+            android:name=".ui.file.FileManageComposeActivity"
+            android:launchMode="singleTop" />
+        <!-- TXT目录规则 -->
+        <activity
+            android:name=".ui.book.toc.rule.TxtTocRuleComposeActivity"
+            android:launchMode="singleTop" />
         <!-- 缓存界面 -->
         <activity
             android:name=".ui.book.cache.CacheActivity"

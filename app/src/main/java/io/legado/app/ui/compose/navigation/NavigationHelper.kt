@@ -12,14 +12,14 @@ import io.legado.app.ui.book.manage.BookshelfManageActivity
 import io.legado.app.ui.book.toc.TocActivity
 import io.legado.app.ui.book.bookmark.AllBookmarkActivity
 import io.legado.app.ui.book.cache.CacheActivity
-import io.legado.app.ui.file.FileManageActivity
+import io.legado.app.ui.file.FileManageComposeActivity
 import io.legado.app.ui.code.CodeEditActivity
 import io.legado.app.ui.book.audio.AudioPlayActivity
 import io.legado.app.ui.video.VideoPlayerActivity
 import io.legado.app.ui.book.source.manage.BookSourceActivity
 import io.legado.app.ui.rss.source.manage.RssSourceActivity
 import io.legado.app.ui.replace.ReplaceRuleActivity
-import io.legado.app.ui.book.toc.rule.TxtTocRuleActivity
+import io.legado.app.ui.book.toc.rule.TxtTocRuleComposeActivity
 import io.legado.app.ui.browser.WebViewActivity
 
 object NavigationHelper {
@@ -99,7 +99,7 @@ object NavigationHelper {
     }
 
     fun navigateToFileManage(context: Context) {
-        val intent = Intent(context, FileManageActivity::class.java)
+        val intent = Intent(context, FileManageComposeActivity::class.java)
         context.startActivity(intent)
     }
 
@@ -134,7 +134,7 @@ object NavigationHelper {
     }
 
     fun navigateToTxtTocRule(context: Context) {
-        val intent = Intent(context, TxtTocRuleActivity::class.java)
+        val intent = Intent(context, TxtTocRuleComposeActivity::class.java)
         context.startActivity(intent)
     }
 
