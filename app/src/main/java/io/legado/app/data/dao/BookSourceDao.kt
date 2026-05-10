@@ -44,6 +44,49 @@ interface BookSourceDao {
     )
     fun search(searchKey: String): List<BookSource>
 
+    @get:Query("select * from book_sources_part where enabledExplore = 0 order by customOrder asc")
+    val allDisabledExplorePart: List<BookSourcePart>
+
+    @get:Query("select * from book_sources_part where hasLoginUrl = 1 order by customOrder asc")
+    val allLoginPart: List<BookSourcePart>
+
+    @get:Query(
+        """select * from book_sources_part 
+        where bookSourceGroup is null or bookSourceGroup = '' or bookSourceGroup like '%未分组%'
+        order by customOrder asc"""
+    )
+    val allNoGroupPart: List<BookSourcePart>
+
+    @get:Query("select * from book_sources_part where enabledExplore = 1 order by customOrder asc")
+    val allEnabledExplorePart: List<BookSourcePart>
+
+    @Query(
+        """select * from book_sources_part 
+        where bookSourceGroup = :searchKey
+        or bookSourceGroup like :searchKey || ',%' 
+        or bookSourceGroup like  '%,' || :searchKey
+        or bookSourceGroup like  '%,' || :searchKey || ',%' 
+        order by customOrder asc"""
+    )
+    fun groupSearchPart(searchKey: String): List<BookSourcePart>
+
+    @Query(
+        """select bp.*
+        from book_sources b join book_sources_part bp on b.bookSourceUrl = bp.bookSourceUrl 
+        where b.bookSourceName like '%' || :searchKey || '%'
+        or b.bookSourceGroup like '%' || :searchKey || '%'
+        or b.bookSourceUrl like '%' || :searchKey || '%'
+        or b.bookSourceComment like '%' || :searchKey || '%' 
+        order by b.customOrder asc"""
+    )
+    fun searchPart(searchKey: String): List<BookSourcePart>
+
+    @Query("select * from book_sources_part where bookSourceUrl = :key")
+    fun getBookSourcePart(key: String): BookSourcePart?
+
+    @get:Query("select * from book_sources_part")
+    val allBookSourcePart: List<BookSourcePart>
+
     @Query(
         """select bp.*
         from book_sources b join book_sources_part bp on b.bookSourceUrl = bp.bookSourceUrl 
@@ -245,9 +288,6 @@ interface BookSourceDao {
 
     @Query("select * from book_sources where bookSourceUrl = :key")
     fun getBookSource(key: String): BookSource?
-
-    @Query("select * from book_sources_part where bookSourceUrl = :key")
-    fun getBookSourcePart(key: String): BookSourcePart?
 
     @Query("select count(*) from book_sources")
     fun allCount(): Int

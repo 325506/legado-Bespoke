@@ -196,6 +196,22 @@
             android:configChanges="locale|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize|stateHidden" />
+        <!-- 书源编辑 Compose -->
+        <activity
+            android:name=".ui.compose.booksource.edit.BookSourceEditComposeActivity"
+            android:configChanges="locale|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <!-- 书源调试 Compose -->
+        <activity
+            android:name=".ui.compose.booksource.debug.SourceDebugComposeActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="behind" />
+        <!-- 书源管理 Compose -->
+        <activity
+            android:name=".ui.compose.booksource.BookSourceComposeActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="behind" />
         <!-- 订阅源编辑 -->
         <activity
             android:name=".ui.rss.source.edit.RssSourceEditActivity"
