@@ -30,7 +30,7 @@ import io.legado.app.databinding.ActivityRssArtivlesBinding
 import io.legado.app.help.source.sortUrls
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.ui.login.SourceLoginActivity
-import io.legado.app.ui.rss.source.edit.RssSourceEditActivity
+import io.legado.app.ui.rss.source.edit.RssSourceEditComposeActivity
 import io.legado.app.ui.widget.dialog.VariableDialog
 import io.legado.app.utils.*
 import io.legado.app.utils.viewbindingdelegate.viewBinding
@@ -51,7 +51,7 @@ class RssSortActivity : VMBaseActivity<ActivityRssArtivlesBinding, RssSortViewMo
     private val fragmentMap = hashMapOf<String, Fragment>()
     private val orientation by lazy { resources.configuration.orientation }
     private val editSourceResult = registerForActivityResult(
-        StartActivityContract(RssSourceEditActivity::class.java)
+        StartActivityContract(RssSourceEditComposeActivity::class.java)
     ) {
         if (it.resultCode == RESULT_OK) {
             viewModel.initData(intent) {

@@ -17,7 +17,7 @@ import io.legado.app.ui.code.CodeEditActivity
 import io.legado.app.ui.book.audio.AudioPlayActivity
 import io.legado.app.ui.video.VideoPlayerActivity
 import io.legado.app.ui.book.source.manage.BookSourceActivity
-import io.legado.app.ui.rss.source.manage.RssSourceActivity
+import io.legado.app.ui.rss.source.manage.RssSourceComposeActivity
 import io.legado.app.ui.replace.ReplaceRuleComposeActivity
 import io.legado.app.ui.book.toc.rule.TxtTocRuleComposeActivity
 import io.legado.app.ui.browser.WebViewActivity
@@ -124,7 +124,7 @@ object NavigationHelper {
     }
 
     fun navigateToRssSourceManage(context: Context) {
-        val intent = Intent(context, RssSourceActivity::class.java)
+        val intent = Intent(context, RssSourceComposeActivity::class.java)
         context.startActivity(intent)
     }
 

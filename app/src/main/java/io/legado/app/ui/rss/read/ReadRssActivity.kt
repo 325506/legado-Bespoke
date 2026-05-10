@@ -77,7 +77,7 @@ import java.io.ByteArrayInputStream
 import java.util.regex.PatternSyntaxException
 import io.legado.app.ui.about.AppLogDialog
 import io.legado.app.ui.rss.article.ReadRecordDialog
-import io.legado.app.ui.rss.source.edit.RssSourceEditActivity
+import io.legado.app.ui.rss.source.edit.RssSourceEditComposeActivity
 import io.legado.app.utils.StartActivityContract
 import kotlinx.coroutines.runBlocking
 import androidx.core.net.toUri
@@ -145,7 +145,7 @@ class ReadRssActivity : VMBaseActivity<ActivityRssReadBinding, ReadRssViewModel>
         }
     }
     private val editSourceResult = registerForActivityResult(
-        StartActivityContract(RssSourceEditActivity::class.java)
+        StartActivityContract(RssSourceEditComposeActivity::class.java)
     ) {
         if (it.resultCode == RESULT_OK) {
             refresh()

@@ -22,7 +22,8 @@ import io.legado.app.ui.association.AddToBookshelfDialog
 import io.legado.app.ui.book.explore.ExploreShowActivity
 import io.legado.app.ui.book.search.SearchActivity
 import io.legado.app.ui.login.SourceLoginActivity
-import io.legado.app.ui.rss.article.RssSortActivity
+import io.legado.app.ui.rss.article.RssSortComposeActivity
+import io.legado.app.ui.rss.read.ReadRssComposeActivity
 import io.legado.app.ui.widget.dialog.PhotoDialog
 import io.legado.app.utils.isJsonObject
 import io.legado.app.utils.openUrl
@@ -145,7 +146,7 @@ open class RssJsExtensions(
                         } ?: url
                     }
                     val sourceUrl = toSource.sourceUrl
-                    RssSortActivity.start(activity, sortUrl, sourceUrl)
+                    RssSortComposeActivity.start(activity, sortUrl, sourceUrl)
                 }
 
                 "rss" -> {
@@ -158,7 +159,7 @@ open class RssJsExtensions(
                     if (url.isNullOrBlank()) {
                         if (toSource.singleUrl) {
                             if (sourceUrl.startsWith("http", true)) {
-                                ReadRssActivity.start(
+                                ReadRssComposeActivity.start(
                                     activity,
                                     singleTop,
                                     sourceUrl,
@@ -183,9 +184,9 @@ open class RssJsExtensions(
                             }
                         }
                         if (startHtml.isNullOrBlank()) {
-                            RssSortActivity.start(activity, null, sourceUrl)
+                            RssSortComposeActivity.start(activity, null, sourceUrl)
                         } else {
-                            ReadRssActivity.start(
+                            ReadRssComposeActivity.start(
                                 activity,
                                 singleTop,
                                 sourceUrl,
@@ -204,7 +205,7 @@ open class RssJsExtensions(
                     )
                     appDb.rssReadRecordDao.insertRecord(rssReadRecord) //留下历史记录
                     withContext(Main) {
-                        ReadRssActivity.start(
+                        ReadRssComposeActivity.start(
                             activity,
                             singleTop,
                             sourceUrl,

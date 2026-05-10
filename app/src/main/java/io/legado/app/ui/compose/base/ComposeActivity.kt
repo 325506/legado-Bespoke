@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.legado.app.constant.Theme
 import io.legado.app.ui.compose.theme.LegadoTheme
+import io.legado.app.utils.showDialogFragment
 
 abstract class ComposeActivity(
     fullScreen: Boolean = true,

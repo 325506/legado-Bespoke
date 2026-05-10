@@ -220,7 +220,7 @@
             android:screenOrientation="behind" />
         <!-- 订阅源编辑 -->
         <activity
-            android:name=".ui.rss.source.edit.RssSourceEditActivity"
+            android:name=".ui.rss.source.edit.RssSourceEditComposeActivity"
             android:configChanges="locale|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize|stateHidden" />
@@ -256,7 +256,7 @@
             android:screenOrientation="behind" />
         <!-- 订阅源管理 -->
         <activity
-            android:name=".ui.rss.source.manage.RssSourceActivity"
+            android:name=".ui.rss.source.manage.RssSourceComposeActivity"
             android:launchMode="singleTop"
             android:screenOrientation="behind" />
         <!-- txt目录规则管理 -->
@@ -296,11 +296,11 @@
             android:screenOrientation="behind" />
         <!-- RSS条目 -->
         <activity
-            android:name=".ui.rss.article.RssSortActivity"
+            android:name=".ui.rss.article.RssSortComposeActivity"
             android:launchMode="singleTop" />
         <!-- RSS阅读 -->
         <activity
-            android:name=".ui.rss.read.ReadRssActivity"
+            android:name=".ui.rss.read.ReadRssComposeActivity"
             android:configChanges="orientation|screenSize"
             android:hardwareAccelerated="true"
             android:launchMode="standard" />
@@ -318,11 +318,11 @@
             android:launchMode="singleTop" />
         <!-- 订阅源调试 -->
         <activity
-            android:name=".ui.rss.source.debug.RssSourceDebugActivity"
+            android:name=".ui.rss.source.debug.RssSourceDebugComposeActivity"
             android:launchMode="singleTop" />
         <!-- Rss收藏 -->
         <activity
-            android:name=".ui.rss.favorites.RssFavoritesActivity"
+            android:name=".ui.rss.favorites.RssFavoritesComposeActivity"
             android:launchMode="singleTop" />
         <!-- 书签 -->
         <activity

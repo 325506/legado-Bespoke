@@ -22,11 +22,11 @@ import io.legado.app.lib.theme.primaryColor
 import io.legado.app.lib.theme.primaryTextColor
 import io.legado.app.ui.main.MainFragmentInterface
 import io.legado.app.ui.rss.article.ReadRecordDialog
-import io.legado.app.ui.rss.article.RssSortActivity
-import io.legado.app.ui.rss.favorites.RssFavoritesActivity
-import io.legado.app.ui.rss.read.ReadRssActivity
+import io.legado.app.ui.rss.article.RssSortComposeActivity
+import io.legado.app.ui.rss.favorites.RssFavoritesComposeActivity
+import io.legado.app.ui.rss.read.ReadRssComposeActivity
 import io.legado.app.ui.rss.source.edit.RssSourceEditActivity
-import io.legado.app.ui.rss.source.manage.RssSourceActivity
+import io.legado.app.ui.rss.source.manage.RssSourceComposeActivity
 import io.legado.app.ui.rss.subscription.RuleSubActivity
 import io.legado.app.utils.applyTint
 import io.legado.app.utils.flowWithLifecycleAndDatabaseChange
@@ -89,8 +89,8 @@ class RssFragment() : VMBaseFragment<RssViewModel>(R.layout.fragment_rss), MainF
         super.onCompatOptionsItemSelected(item)
         when (item.itemId) {
             R.id.menu_read_record -> showDialogFragment<ReadRecordDialog>()
-            R.id.menu_rss_config -> startActivity<RssSourceActivity>()
-            R.id.menu_rss_star -> startActivity<RssFavoritesActivity>()
+            R.id.menu_rss_config -> startActivity<RssSourceComposeActivity>()
+            R.id.menu_rss_star -> startActivity<RssFavoritesComposeActivity>()
             else -> if (item.groupId == R.id.menu_group_text) {
                 searchView.setQuery("group:${item.title}", true)
             }
@@ -183,7 +183,7 @@ class RssFragment() : VMBaseFragment<RssViewModel>(R.layout.fragment_rss), MainF
         if (rssSource.singleUrl) {
             viewModel.getSingleUrl(rssSource) { url ->
                 if (url.startsWith("http", true)) {
-                    ReadRssActivity.start(
+                    ReadRssComposeActivity.start(
                         requireContext(),
                         true,
                         rssSource.sourceUrl,
@@ -196,11 +196,11 @@ class RssFragment() : VMBaseFragment<RssViewModel>(R.layout.fragment_rss), MainF
             }
         } else {
             viewModel.launchRssWithHtml(rssSource, {
-                startActivity<RssSortActivity> {
+                startActivity<RssSortComposeActivity> {
                     putExtra("sourceUrl", rssSource.sourceUrl)
                 }
             }) { html ->
-                ReadRssActivity.start(
+                ReadRssComposeActivity.start(
                     requireContext(),
                     true,
                     rssSource.sourceUrl,
