@@ -53,6 +53,7 @@ inline fun <T> runScriptWithContext(context: CoroutineContext, block: () -> T): 
 }
 
 suspend inline fun <T> runScriptWithContext(block: () -> T): T {
+    RhinoScriptEngine
     val rhinoContext = Context.enter() as RhinoContext
     val previousCoroutineContext = rhinoContext.coroutineContext
     rhinoContext.coroutineContext = currentCoroutineContext().minusKey(ContinuationInterceptor)

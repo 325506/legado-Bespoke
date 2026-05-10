@@ -36,6 +36,7 @@ fun BookSourceScreen(
     onNavigateBack: () -> Unit = {},
     onEditSource: (String) -> Unit = {},
     onDebugSource: (String) -> Unit = {},
+    onLoginSource: (String) -> Unit = {},
     onSearchBook: (BookSourcePart) -> Unit = {},
     onExportSelection: (List<BookSourcePart>) -> Unit = {},
     onShareSelection: (List<BookSourcePart>) -> Unit = {},
@@ -502,6 +503,14 @@ fun BookSourceScreen(
                             onDebugSource(currentItem?.bookSourceUrl ?: "")
                         }) {
                             Text("调试")
+                        }
+                        if (currentItem?.hasLoginUrl == true) {
+                            TextButton(onClick = {
+                                showItemMenu = false
+                                onLoginSource(currentItem?.bookSourceUrl ?: "")
+                            }) {
+                                Text("登录")
+                            }
                         }
                         TextButton(onClick = {
                             showItemMenu = false

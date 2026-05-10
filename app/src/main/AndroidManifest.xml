@@ -207,6 +207,12 @@
             android:name=".ui.compose.booksource.debug.SourceDebugComposeActivity"
             android:launchMode="singleTop"
             android:screenOrientation="behind" />
+        <!-- 书源登录 Compose -->
+        <activity
+            android:name=".ui.compose.booksource.login.SourceLoginComposeActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <!-- 书源管理 Compose -->
         <activity
             android:name=".ui.compose.booksource.BookSourceComposeActivity"

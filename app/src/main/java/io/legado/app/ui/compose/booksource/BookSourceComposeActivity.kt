@@ -10,6 +10,7 @@ import io.legado.app.constant.Theme
 import io.legado.app.data.entities.BookSourcePart
 import io.legado.app.ui.compose.booksource.edit.BookSourceEditComposeActivity
 import io.legado.app.ui.compose.booksource.debug.SourceDebugComposeActivity
+import io.legado.app.ui.compose.booksource.login.SourceLoginComposeActivity
 import io.legado.app.ui.book.search.SearchActivity
 import io.legado.app.ui.compose.base.ComposeActivity
 import io.legado.app.ui.compose.screens.booksource.BookSourceScreen
@@ -50,6 +51,12 @@ class BookSourceComposeActivity : ComposeActivity() {
                 },
                 onDebugSource = { url ->
                     startActivity<SourceDebugComposeActivity> {
+                        putExtra("key", url)
+                    }
+                },
+                onLoginSource = { url ->
+                    startActivity<SourceLoginComposeActivity> {
+                        putExtra("type", "bookSource")
                         putExtra("key", url)
                     }
                 },
