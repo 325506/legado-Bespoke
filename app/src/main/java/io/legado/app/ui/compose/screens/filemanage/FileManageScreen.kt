@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.legado.app.R
+import io.legado.app.ui.compose.components.LegadoTopAppBar
 import io.legado.app.ui.compose.theme.LegadoTheme
 import java.io.File
 
@@ -91,8 +92,8 @@ fun FileManageScreen(
                         }
                     )
                 } else {
-                    TopAppBar(
-                        title = { Text(context.getString(R.string.file_manage)) },
+                    LegadoTopAppBar(
+                        title = context.getString(R.string.file_manage),
                         navigationIcon = {
                             IconButton(onClick = {
                                 if (!viewModel.goBackDir()) {
@@ -109,13 +110,7 @@ fun FileManageScreen(
                             IconButton(onClick = { showSearch = true }) {
                                 Icon(Icons.Default.Search, contentDescription = "搜索")
                             }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
+                        }
                     )
                 }
             }

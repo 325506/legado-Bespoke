@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import io.legado.app.ui.book.read.ReadBookActivity
 import io.legado.app.ui.book.info.BookInfoActivity
 import io.legado.app.ui.book.search.SearchActivity
-import io.legado.app.ui.config.ConfigActivity
+import io.legado.app.ui.config.ConfigComposeActivity
 import io.legado.app.ui.about.AboutActivity
 import io.legado.app.ui.book.manage.BookshelfManageActivity
 import io.legado.app.ui.book.toc.TocActivity
@@ -67,7 +67,7 @@ object NavigationHelper {
     }
 
     fun navigateToConfig(context: Context) {
-        val intent = Intent(context, ConfigActivity::class.java)
+        val intent = Intent(context, ConfigComposeActivity::class.java)
         context.startActivity(intent)
     }
 

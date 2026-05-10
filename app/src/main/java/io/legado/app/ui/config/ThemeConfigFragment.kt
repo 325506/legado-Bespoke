@@ -208,11 +208,11 @@ class ThemeConfigFragment : PreferenceFragment(),
             "saveDayTheme",
             "saveNightTheme" -> alertSaveTheme(key)
 
-            "coverConfig" -> startActivity<ConfigActivity> {
+            "coverConfig" -> startActivity<ConfigComposeActivity> {
                 putExtra("configTag", ConfigTag.COVER_CONFIG)
             }
 
-            "welcomeStyle" -> startActivity<ConfigActivity> {
+            "welcomeStyle" -> startActivity<ConfigComposeActivity> {
                 putExtra("configTag", ConfigTag.WELCOME_CONFIG)
             }
         }

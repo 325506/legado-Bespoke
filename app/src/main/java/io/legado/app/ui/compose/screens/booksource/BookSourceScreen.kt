@@ -27,6 +27,7 @@ import io.legado.app.data.entities.BookSourcePart
 import io.legado.app.ui.book.source.edit.BookSourceEditActivity
 import io.legado.app.ui.book.source.debug.BookSourceDebugActivity
 import io.legado.app.ui.book.search.SearchActivity
+import io.legado.app.ui.compose.components.LegadoTopAppBar
 import io.legado.app.ui.compose.theme.LegadoTheme
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -69,14 +70,8 @@ fun BookSourceScreen(
     LegadoTheme {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = {
-                        if (selection.isNotEmpty()) {
-                            Text("已选择 ${selection.size} 项")
-                        } else {
-                            Text(context.getString(R.string.book_source))
-                        }
-                    },
+                LegadoTopAppBar(
+                    title = if (selection.isNotEmpty()) "已选择 ${selection.size} 项" else context.getString(R.string.book_source),
                     navigationIcon = {
                         IconButton(onClick = onNavigateBack) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "返回")

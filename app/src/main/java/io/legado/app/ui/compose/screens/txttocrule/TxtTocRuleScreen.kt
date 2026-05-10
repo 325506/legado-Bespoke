@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.legado.app.R
 import io.legado.app.data.entities.TxtTocRule
+import io.legado.app.ui.compose.components.LegadoTopAppBar
 import io.legado.app.ui.compose.theme.LegadoTheme
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -86,14 +87,8 @@ fun TxtTocRuleScreen(
     LegadoTheme {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = {
-                        if (selection.isNotEmpty()) {
-                            Text("已选择 ${selection.size} 项")
-                        } else {
-                            Text(context.getString(R.string.txt_toc_rule))
-                        }
-                    },
+                LegadoTopAppBar(
+                    title = if (selection.isNotEmpty()) "已选择 ${selection.size} 项" else context.getString(R.string.txt_toc_rule),
                     navigationIcon = {
                         IconButton(onClick = onBack) {
                             Icon(
@@ -172,13 +167,7 @@ fun TxtTocRuleScreen(
                                 }
                             )
                         }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                    }
                 )
             },
             bottomBar = {

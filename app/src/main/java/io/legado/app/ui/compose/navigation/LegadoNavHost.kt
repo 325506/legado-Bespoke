@@ -58,7 +58,10 @@ fun LegadoNavHost(
         }
 
         composable(Screen.Config.route) {
-            ConfigScreen(navController)
+            ConfigScreen(
+                configTag = io.legado.app.ui.config.ConfigTag.OTHER_CONFIG,
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(Screen.About.route) {

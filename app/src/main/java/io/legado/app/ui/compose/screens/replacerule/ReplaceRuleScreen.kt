@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.legado.app.R
 import io.legado.app.data.entities.ReplaceRule
+import io.legado.app.ui.compose.components.LegadoTopAppBar
 import io.legado.app.ui.compose.theme.LegadoTheme
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -64,14 +65,8 @@ fun ReplaceRuleScreen(
     LegadoTheme {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = {
-                        if (selection.isNotEmpty()) {
-                            Text("已选择 ${selection.size} 项")
-                        } else {
-                            Text(context.getString(R.string.replace_purify))
-                        }
-                    },
+                LegadoTopAppBar(
+                    title = if (selection.isNotEmpty()) "已选择 ${selection.size} 项" else context.getString(R.string.replace_purify),
                     navigationIcon = {
                         IconButton(onClick = onBack) {
                             Icon(
