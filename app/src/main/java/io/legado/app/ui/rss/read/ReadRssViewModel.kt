@@ -11,6 +11,7 @@ import com.script.rhino.runScriptWithContext
 import io.legado.app.base.BaseViewModel
 import io.legado.app.constant.AppConst
 import io.legado.app.constant.AppConst.imagePathKey
+import io.legado.app.constant.AppLog
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.RssArticle
 import io.legado.app.data.entities.RssSource
@@ -35,7 +36,8 @@ class ReadRssViewModel(application: Application) : BaseViewModel(application) {
     var rssSource: RssSource? = null
     var rssArticle: RssArticle? = null
     var tts: TTS? = null
-    val contentLiveData = MutableLiveData<String>()
+    data class ContentData(val content: String, val article: RssArticle)
+    val contentLiveData = MutableLiveData<ContentData>()
     val urlLiveData = MutableLiveData<AnalyzeUrl>()
     val htmlLiveData = MutableLiveData<String>()
     var rssStar: RssStar? = null
@@ -47,6 +49,7 @@ class ReadRssViewModel(application: Application) : BaseViewModel(application) {
     var hasPreloadJs = false
 
     fun initData(intent: Intent, success: (() -> Unit)? = null) {
+        AppLog.put("[ReadRssVM] initData: origin=${intent.getStringExtra("origin")}, link=${intent.getStringExtra("link")}, openUrl=${intent.getStringExtra("openUrl")}, startHtml=${intent.getStringExtra("startHtml")?.take(20)}")
         execute {
             val origin = intent.getStringExtra("origin") ?: return@execute
             this@ReadRssViewModel.origin = origin
@@ -55,6 +58,7 @@ class ReadRssViewModel(application: Application) : BaseViewModel(application) {
             val link = intent.getStringExtra("link")
             rssSource = appDb.rssSourceDao.getByKey(origin)?.also {
                 hasPreloadJs = !it.preloadJs.isNullOrBlank()
+                AppLog.put("[ReadRssVM] initData: 获取 rssSource, name=${it.sourceName}, hasPreloadJs=$hasPreloadJs, ruleContent=${it.ruleContent?.take(20)}")
             }
             headerMap = runScriptWithContext {
                 rssSource?.getHeaderMap() ?: emptyMap()
@@ -68,15 +72,20 @@ class ReadRssViewModel(application: Application) : BaseViewModel(application) {
                     } else {
                         appDb.rssArticleDao.get(origin, link, sort)
                     }
+                AppLog.put("[ReadRssVM] initData: rssArticle=${rssArticle?.title}, description=${rssArticle?.description?.take(20)}")
                 rssArticle?.let { article ->
+                    this@ReadRssViewModel.rssArticle = article
                     if (!article.description.isNullOrBlank()) {
-                        contentLiveData.postValue(article.description!!)
+                        AppLog.put("[ReadRssVM] initData: 使用已有 description → contentLiveData")
+                        contentLiveData.postValue(ContentData(article.description!!, article))
                     } else {
                         rssSource?.let {
                             val ruleContent = it.ruleContent
                             if (!ruleContent.isNullOrBlank()) {
+                                AppLog.put("[ReadRssVM] initData: 调用 loadContent (有 ruleContent)")
                                 loadContent(article, ruleContent)
                             } else {
+                                AppLog.put("[ReadRssVM] initData: 调用 loadUrl (无 ruleContent)")
                                 loadUrl(article.link, article.origin)
                             }
                         } ?: loadUrl(article.link, article.origin)
@@ -87,12 +96,15 @@ class ReadRssViewModel(application: Application) : BaseViewModel(application) {
                 val startHtml = intent.getStringExtra("startHtml")
                 val openUrl = intent.getStringExtra("openUrl")
                 if (startHtml != null) {
+                    AppLog.put("[ReadRssVM] initData: 调用 loadStartHtml")
                     loadStartHtml(startHtml)
                 } else if (ruleContent.isNullOrBlank() || rssSource!!.singleUrl) {
+                    AppLog.put("[ReadRssVM] initData: 调用 loadUrl (singleUrl 或无 ruleContent)")
                     loadUrl(openUrl, origin)
                 } else if (openUrl != null) {
                     val rssArticle = appDb.rssArticleDao.getByLink(origin, openUrl) ?: RssArticle(
                         origin, title, title, link = openUrl)
+                    AppLog.put("[ReadRssVM] initData: 调用 loadContent (有 openUrl)")
                     loadContent(rssArticle, ruleContent)
                 }
             }
@@ -125,9 +137,11 @@ class ReadRssViewModel(application: Application) : BaseViewModel(application) {
                     appDb.rssStarDao.insert(it)
                 }
                 this@ReadRssViewModel.rssArticle = rssArticle
-                contentLiveData.postValue(body)
+                contentLiveData.postValue(ContentData(body, rssArticle))
             }.onError {
-                contentLiveData.postValue("加载正文失败\n${it.stackTraceToString()}")
+                rssArticle?.let { article ->
+                    contentLiveData.postValue(ContentData("加载正文失败\n${it.stackTraceToString()}", article))
+                }
             }
     }
 

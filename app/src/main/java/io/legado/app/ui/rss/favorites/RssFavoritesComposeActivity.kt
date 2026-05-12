@@ -8,7 +8,7 @@ import io.legado.app.ui.compose.base.ComposeActivity
 import io.legado.app.ui.compose.screens.rss.RssFavoritesComposeViewModel
 import io.legado.app.ui.compose.screens.rss.RssFavoritesScreen
 import io.legado.app.ui.compose.theme.LegadoTheme
-import io.legado.app.ui.rss.read.ReadRssComposeActivity
+import io.legado.app.ui.rss.read.ReadRssActivity
 
 class RssFavoritesComposeActivity : ComposeActivity() {
 
@@ -25,7 +25,7 @@ class RssFavoritesComposeActivity : ComposeActivity() {
                     viewModel = viewModel,
                     onNavigateBack = { finish() },
                     onReadRss = { rssStar ->
-                        ReadRssComposeActivity.start(
+                        ReadRssActivity.start(
                             this,
                             rssStar.origin,
                             rssStar.title,

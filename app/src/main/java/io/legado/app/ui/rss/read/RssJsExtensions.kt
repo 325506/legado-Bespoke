@@ -23,7 +23,7 @@ import io.legado.app.ui.book.explore.ExploreShowActivity
 import io.legado.app.ui.book.search.SearchActivity
 import io.legado.app.ui.login.SourceLoginActivity
 import io.legado.app.ui.rss.article.RssSortComposeActivity
-import io.legado.app.ui.rss.read.ReadRssComposeActivity
+import io.legado.app.ui.rss.read.ReadRssActivity
 import io.legado.app.ui.widget.dialog.PhotoDialog
 import io.legado.app.utils.isJsonObject
 import io.legado.app.utils.openUrl
@@ -159,7 +159,7 @@ open class RssJsExtensions(
                     if (url.isNullOrBlank()) {
                         if (toSource.singleUrl) {
                             if (sourceUrl.startsWith("http", true)) {
-                                ReadRssComposeActivity.start(
+                                ReadRssActivity.start(
                                     activity,
                                     singleTop,
                                     sourceUrl,
@@ -186,7 +186,7 @@ open class RssJsExtensions(
                         if (startHtml.isNullOrBlank()) {
                             RssSortComposeActivity.start(activity, null, sourceUrl)
                         } else {
-                            ReadRssComposeActivity.start(
+                            ReadRssActivity.start(
                                 activity,
                                 singleTop,
                                 sourceUrl,
@@ -205,7 +205,7 @@ open class RssJsExtensions(
                     )
                     appDb.rssReadRecordDao.insertRecord(rssReadRecord) //留下历史记录
                     withContext(Main) {
-                        ReadRssComposeActivity.start(
+                        ReadRssActivity.start(
                             activity,
                             singleTop,
                             sourceUrl,

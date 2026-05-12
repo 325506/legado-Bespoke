@@ -10,7 +10,7 @@ import io.legado.app.ui.compose.screens.rss.RssSortComposeViewModel
 import io.legado.app.ui.compose.screens.rss.RssSortScreen
 import io.legado.app.ui.compose.theme.LegadoTheme
 import io.legado.app.ui.login.SourceLoginActivity
-import io.legado.app.ui.rss.read.ReadRssComposeActivity
+import io.legado.app.ui.rss.read.ReadRssActivity
 import io.legado.app.utils.startActivity
 import io.legado.app.utils.showDialogFragment
 
@@ -30,7 +30,7 @@ class RssSortComposeActivity : ComposeActivity() {
                     viewModel = viewModel,
                     onNavigateBack = { finish() },
                     onReadRss = { rssArticle ->
-                        ReadRssComposeActivity.start(
+                        ReadRssActivity.start(
                             this,
                             rssArticle.origin,
                             rssArticle.title,

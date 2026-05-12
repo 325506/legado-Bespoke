@@ -24,7 +24,7 @@ import io.legado.app.ui.main.MainFragmentInterface
 import io.legado.app.ui.rss.article.ReadRecordDialog
 import io.legado.app.ui.rss.article.RssSortComposeActivity
 import io.legado.app.ui.rss.favorites.RssFavoritesComposeActivity
-import io.legado.app.ui.rss.read.ReadRssComposeActivity
+import io.legado.app.ui.rss.read.ReadRssActivity
 import io.legado.app.ui.rss.source.edit.RssSourceEditActivity
 import io.legado.app.ui.rss.source.manage.RssSourceComposeActivity
 import io.legado.app.ui.rss.subscription.RuleSubActivity
@@ -183,7 +183,7 @@ class RssFragment() : VMBaseFragment<RssViewModel>(R.layout.fragment_rss), MainF
         if (rssSource.singleUrl) {
             viewModel.getSingleUrl(rssSource) { url ->
                 if (url.startsWith("http", true)) {
-                    ReadRssComposeActivity.start(
+                    ReadRssActivity.start(
                         requireContext(),
                         true,
                         rssSource.sourceUrl,
@@ -200,7 +200,7 @@ class RssFragment() : VMBaseFragment<RssViewModel>(R.layout.fragment_rss), MainF
                     putExtra("sourceUrl", rssSource.sourceUrl)
                 }
             }) { html ->
-                ReadRssComposeActivity.start(
+                ReadRssActivity.start(
                     requireContext(),
                     true,
                     rssSource.sourceUrl,

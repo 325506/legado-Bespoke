@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
 import io.legado.app.constant.Theme
 import io.legado.app.ui.about.AppLogDialog
 import io.legado.app.ui.compose.base.ComposeActivity
@@ -23,8 +24,6 @@ class ReadRssComposeActivity : ComposeActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        viewModel.initData(intent)
 
         setContent {
             LegadoTheme(theme = themeMode) {
@@ -49,6 +48,9 @@ class ReadRssComposeActivity : ComposeActivity() {
                         showDialogFragment<AppLogDialog>()
                     }
                 )
+                LaunchedEffect(Unit) {
+                    viewModel.initData(intent)
+                }
             }
         }
     }

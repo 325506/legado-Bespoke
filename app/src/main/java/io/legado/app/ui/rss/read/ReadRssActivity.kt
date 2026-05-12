@@ -51,6 +51,7 @@ import io.legado.app.ui.association.OnLineImportActivity
 import io.legado.app.ui.file.HandleFileContract
 import io.legado.app.ui.login.SourceLoginActivity
 import io.legado.app.ui.rss.favorites.RssFavoritesDialog
+import io.legado.app.ui.compose.screens.rss.ReadRssScreen
 import io.legado.app.utils.ACache
 import io.legado.app.utils.NetworkUtils
 import io.legado.app.utils.gone
@@ -101,6 +102,12 @@ import java.lang.ref.WeakReference
 import splitties.systemservices.powerManager
 import java.net.URLDecoder
 import androidx.core.graphics.createBitmap
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import io.legado.app.ui.compose.theme.LegadoTheme
+import io.legado.app.ui.compose.screens.rss.ReadRssScreenTitleBar
 
 /**
  * rss阅读界面
@@ -121,6 +128,8 @@ class ReadRssActivity : VMBaseActivity<ActivityRssReadBinding, ReadRssViewModel>
     private var customWebViewCallback: WebChromeClient.CustomViewCallback? = null
     private var interfaceInjected: String? = null
     private var needClearHistory = true
+    private var webViewProgress by mutableIntStateOf(0)
+    private var webViewTitle by mutableStateOf("")
     private val selectImageDir = registerForActivityResult(HandleFileContract()) {
         it.uri?.let { uri ->
             ACache.get().put(imagePathKey, uri.toString())
@@ -158,7 +167,10 @@ class ReadRssActivity : VMBaseActivity<ActivityRssReadBinding, ReadRssViewModel>
         binding.webViewContainer.addView(currentWebView)
         viewModel.upStarMenuData.observe(this) { upStarMenu() }
         viewModel.upTtsMenuData.observe(this) { upTtsMenu(it) }
-        viewModel.upTitleData.observe(this) { binding.titleBar.title = it }
+        viewModel.upTitleData.observe(this) { 
+            webViewTitle = it ?: ""
+        }
+        initComposeTitleBar()
         initView()
         initWebView()
         initLiveData()
@@ -321,6 +333,21 @@ class ReadRssActivity : VMBaseActivity<ActivityRssReadBinding, ReadRssViewModel>
         }
     }
 
+    private fun initComposeTitleBar() {
+        binding.titleBarCompose.setContent {
+            LegadoTheme {
+                ReadRssScreenTitleBar(
+                    title = webViewTitle,
+                    progress = webViewProgress,
+                    onNavigateBack = { finish() },
+                    onShowMenu = { openOptionsMenu() },
+                    isStarred = viewModel.rssStar != null,
+                    isTtsPlaying = viewModel.tts?.isSpeaking == true
+                )
+            }
+        }
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWebView() {
         binding.progressBar.fontColor = accentColor
@@ -381,18 +408,16 @@ class ReadRssActivity : VMBaseActivity<ActivityRssReadBinding, ReadRssViewModel>
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initLiveData() {
-        viewModel.contentLiveData.observe(this) { content ->
-            viewModel.rssArticle?.let {
-                upWebviewSettings()
-                initJavascriptInterface()
-                val rssSource = viewModel.rssSource
-                val html = viewModel.clHtml(content, rssSource?.style)
-                val url = NetworkUtils.getAbsoluteURL(it.origin, it.link).substringBefore("@js")
-                val baseUrl = if (rssSource?.loadWithBaseUrl == false) null else url
-                currentWebView.loadDataWithBaseURL(
-                    baseUrl, html, "text/html", "utf-8", url
-                )
-            }
+        viewModel.contentLiveData.observe(this) { contentData ->
+            upWebviewSettings()
+            initJavascriptInterface()
+            val rssSource = viewModel.rssSource
+            val html = viewModel.clHtml(contentData.content, rssSource?.style)
+            val url = NetworkUtils.getAbsoluteURL(contentData.article.origin, contentData.article.link).substringBefore("@js")
+            val baseUrl = if (rssSource?.loadWithBaseUrl == false) null else url
+            currentWebView.loadDataWithBaseURL(
+                baseUrl, html, "text/html", "utf-8", url
+            )
         }
         viewModel.urlLiveData.observe(this) { urlState ->
             upWebviewSettings(urlState.getUserAgent())
@@ -541,6 +566,7 @@ class ReadRssActivity : VMBaseActivity<ActivityRssReadBinding, ReadRssViewModel>
             super.onProgressChanged(view, newProgress)
             binding.progressBar.setDurProgress(newProgress)
             binding.progressBar.gone(newProgress == 100)
+            this@ReadRssActivity.webViewProgress = newProgress
         }
 
         override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
@@ -713,15 +739,15 @@ class ReadRssActivity : VMBaseActivity<ActivityRssReadBinding, ReadRssViewModel>
 
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
-            view.title?.let { title ->
-                if (title != url
-                    && title != view.url
-                    && title.isNotBlank()
+            view.title?.let { pageTitle ->
+                if (pageTitle != url
+                    && pageTitle != view.url
+                    && pageTitle.isNotBlank()
                     && url != BLANK_HTML
-                    && !url.contains(title)) {
-                    binding.titleBar.title = title
+                    && !url.contains(pageTitle)) {
+                    this@ReadRssActivity.webViewTitle = pageTitle
                 } else {
-                    binding.titleBar.title = viewModel.upTitleData.value
+                    this@ReadRssActivity.webViewTitle = viewModel.upTitleData.value ?: ""
                 }
             }
             viewModel.rssSource?.injectJs?.let {
