@@ -40,7 +40,7 @@ import io.legado.app.ui.association.ImportRssSourceDialog
 import io.legado.app.ui.main.bookshelf.BaseBookshelfFragment
 import io.legado.app.ui.main.bookshelf.style1.BookshelfFragment1
 import io.legado.app.ui.main.bookshelf.style2.BookshelfFragment2
-import io.legado.app.ui.main.explore.ExploreFragment
+import io.legado.app.ui.main.explore.ExploreComposeFragment
 import io.legado.app.ui.main.my.MyFragment
 import io.legado.app.ui.main.rss.RssComposeFragment
 import io.legado.app.ui.widget.dialog.TextDialog
@@ -183,7 +183,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                 if (System.currentTimeMillis() - exploreReselected > 300) {
                     exploreReselected = System.currentTimeMillis()
                 } else {
-                    (fragmentMap[1] as? ExploreFragment)?.compressExplore()
+                    (fragmentMap[1] as? ExploreComposeFragment)?.compressExplore()
                 }
             }
         }
@@ -451,7 +451,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             val fragmentId = getId(position)
             if ((fragmentId == idBookshelf1 && any is BookshelfFragment1)
                 || (fragmentId == idBookshelf2 && any is BookshelfFragment2)
-                || (fragmentId == idExplore && any is ExploreFragment)
+                || (fragmentId == idExplore && any is ExploreComposeFragment)
                 || (fragmentId == idRss && any is RssComposeFragment)
                 || (fragmentId == idMy && any is MyFragment)
             ) {
@@ -464,7 +464,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             return when (getId(position)) {
                 idBookshelf1 -> BookshelfFragment1(position)
                 idBookshelf2 -> BookshelfFragment2(position)
-                idExplore -> ExploreFragment(position)
+                idExplore -> ExploreComposeFragment(position)
                 idRss -> RssComposeFragment(position)
                 else -> MyFragment(position)
             }

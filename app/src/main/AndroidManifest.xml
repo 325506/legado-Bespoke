@@ -316,6 +316,10 @@
         <activity
             android:name=".ui.book.explore.ExploreShowActivity"
             android:launchMode="singleTop" />
+        <!-- 发现界面 Compose -->
+        <activity
+            android:name=".ui.book.explore.ExploreShowComposeActivity"
+            android:launchMode="singleTop" />
         <!-- 订阅源调试 -->
         <activity
             android:name=".ui.rss.source.debug.RssSourceDebugComposeActivity"
