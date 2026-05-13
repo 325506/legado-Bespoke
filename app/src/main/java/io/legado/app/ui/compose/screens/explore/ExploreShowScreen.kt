@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -25,11 +26,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -64,7 +68,9 @@ class ExploreShowViewModel(application: android.app.Application) : AndroidViewMo
         private set
     var isLoading by androidx.compose.runtime.mutableStateOf(false)
         private set
-    var page by androidx.compose.runtime.mutableStateOf(1)
+    var hasMore by androidx.compose.runtime.mutableStateOf(true)
+        private set
+    var page by androidx.compose.runtime.mutableIntStateOf(1)
         private set
     var errorMessage by androidx.compose.runtime.mutableStateOf<String?>(null)
         private set
@@ -100,6 +106,9 @@ class ExploreShowViewModel(application: android.app.Application) : AndroidViewMo
         this.sourceUrl = sourceUrl
         this.exploreUrl = exploreUrl
         this.exploreName = name ?: ""
+        books = emptyList()
+        page = 1
+        hasMore = true
         viewModelScope.launch(IO) {
             if (bookSource == null && sourceUrl != null) {
                 bookSource = appDb.bookSourceDao.getBookSource(sourceUrl)
@@ -109,14 +118,20 @@ class ExploreShowViewModel(application: android.app.Application) : AndroidViewMo
     }
 
     fun explore() {
+        if (isLoading || !hasMore) return
         val source = bookSource ?: return
         val url = exploreUrl ?: return
         isLoading = true
         errorMessage = null
-        WebBook.exploreBook(viewModelScope, source, url, page)
+        val currentPage = page
+        WebBook.exploreBook(viewModelScope, source, url, currentPage)
             .onSuccess(IO) { searchBooks ->
-                books = books + searchBooks
-                page++
+                if (searchBooks.isEmpty()) {
+                    hasMore = false
+                } else {
+                    books = books + searchBooks
+                    page = currentPage + 1
+                }
                 isLoading = false
                 appDb.searchBookDao.insert(*searchBooks.toTypedArray())
             }
@@ -124,6 +139,20 @@ class ExploreShowViewModel(application: android.app.Application) : AndroidViewMo
                 errorMessage = it.message
                 isLoading = false
             }
+    }
+
+    fun skipPage(targetPage: Int) {
+        if (targetPage > 0) {
+            books = emptyList()
+            page = targetPage
+            hasMore = true
+        }
+    }
+
+    fun resetAndExplore() {
+        viewModelScope.launch(IO) {
+            explore()
+        }
     }
 
     fun isInBookShelf(book: SearchBook): Boolean {
@@ -145,7 +174,12 @@ fun ExploreShowScreen(
     val context = LocalContext.current
     val books = viewModel.books
     val isLoading = viewModel.isLoading
+    val hasMore = viewModel.hasMore
+    val page = viewModel.page
     val listState = rememberLazyListState()
+
+    var showPagePicker by remember { mutableStateOf(false) }
+    var pagePickerValue by remember { mutableStateOf(1) }
 
     LaunchedEffect(sourceUrl, exploreUrl) {
         viewModel.initData(sourceUrl, exploreUrl, exploreName)
@@ -153,11 +187,13 @@ fun ExploreShowScreen(
 
     LaunchedEffect(listState) {
         snapshotFlow {
-            val lastVisibleIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-            val totalItems = listState.layoutInfo.totalItemsCount
-            lastVisibleIndex >= totalItems - 3
-        }.collect { nearEnd: Boolean ->
-            if (nearEnd && !isLoading && books.isNotEmpty()) {
+            Triple(
+                listState.isScrollInProgress,
+                listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0,
+                listState.layoutInfo.totalItemsCount
+            )
+        }.collect { (isScrolling, lastVisibleIndex, totalItems) ->
+            if (isScrolling && lastVisibleIndex >= totalItems - 3 && !viewModel.isLoading && viewModel.hasMore) {
                 viewModel.explore()
             }
         }
@@ -177,6 +213,17 @@ fun ExploreShowScreen(
                     navigationIcon = {
                         IconButton(onClick = onBack) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "返回")
+                        }
+                    },
+                    actions = {
+                        TextButton(onClick = {
+                            pagePickerValue = page
+                            showPagePicker = true
+                        }) {
+                            Text(
+                                text = context.getString(R.string.menu_page, page),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
                 )
@@ -225,8 +272,66 @@ fun ExploreShowScreen(
                             }
                         }
                     }
+                    if (!hasMore && books.isNotEmpty()) {
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Text("没有更多数据了")
+                            }
+                        }
+                    }
                 }
             }
+        }
+
+        if (showPagePicker) {
+            AlertDialog(
+                onDismissRequest = { showPagePicker = false },
+                title = { Text(context.getString(R.string.change_page)) },
+                text = {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = context.getString(R.string.menu_page, pagePickerValue),
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            TextButton(onClick = {
+                                if (pagePickerValue > 1) pagePickerValue--
+                            }) {
+                                Text("-")
+                            }
+                            TextButton(onClick = {
+                                if (pagePickerValue < 999) pagePickerValue++
+                            }) {
+                                Text("+")
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        if (pagePickerValue != page) {
+                            viewModel.skipPage(pagePickerValue)
+                            viewModel.resetAndExplore()
+                        }
+                        showPagePicker = false
+                    }) {
+                        Text(context.getString(R.string.yes))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showPagePicker = false }) {
+                        Text(context.getString(R.string.cancel))
+                    }
+                }
+            )
         }
     }
 }

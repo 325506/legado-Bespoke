@@ -9,7 +9,8 @@ import androidx.lifecycle.viewModelScope
 import io.legado.app.constant.AppLog
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.BookSourcePart
-import io.legado.app.help.source.SourceHelp
+import io.legado.app.help.source.clearExploreKindsCache
+import io.legado.app.help.source.exploreKinds
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
@@ -98,7 +99,17 @@ class ExploreScreenViewModel(application: Application) : AndroidViewModel(applic
 
     fun deleteSource(source: BookSourcePart) {
         execute {
-            SourceHelp.deleteBookSource(source.bookSourceUrl)
+            appDb.bookSourceDao.delete(listOf(source))
+        }
+    }
+
+    fun refreshSource(source: BookSourcePart) {
+        viewModelScope.launch(IO) {
+            try {
+                source.clearExploreKindsCache()
+            } catch (e: Exception) {
+                AppLog.put("发现界面刷新书源失败", e)
+            }
         }
     }
 

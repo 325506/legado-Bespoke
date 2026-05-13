@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -46,22 +47,34 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.legado.app.R
+import io.legado.app.data.appDb
+import io.legado.app.data.entities.BaseSource
 import io.legado.app.data.entities.BookSourcePart
 import io.legado.app.data.entities.rule.ExploreKind
+import io.legado.app.data.entities.rule.FlexChildStyle
+import io.legado.app.help.coroutine.Coroutine
+import io.legado.app.help.source.clearExploreKindsCache
 import io.legado.app.help.source.exploreKinds
 import io.legado.app.ui.compose.theme.LegadoTheme
+import io.legado.app.ui.login.SourceLoginJsExtensions
+import io.legado.app.ui.main.explore.ExploreAdapter
+import io.legado.app.utils.InfoMap
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -158,7 +171,14 @@ fun ExploreScreen(
                             onToggleExpand = { viewModel.toggleExpand(index) },
                             onOpenExplore = onOpenExplore,
                             onLongClick = { sourceMenuSource = source },
-                            onSearchBook = onSearchBook
+                            onSearchBook = onSearchBook,
+                            onLogin = onLogin,
+                            onRefresh = {
+                                viewModel.refreshSource(source)
+                            },
+                            onEdit = onEditSource,
+                            onToTop = { onToTop(source) },
+                            onDelete = { onDeleteSource(source) }
                         )
                     }
                 }
@@ -312,10 +332,40 @@ private fun ExploreSourceItem(
     onToggleExpand: () -> Unit,
     onOpenExplore: (sourceUrl: String, title: String, exploreUrl: String?) -> Unit,
     onLongClick: () -> Unit,
-    onSearchBook: (BookSourcePart) -> Unit
+    onSearchBook: (BookSourcePart) -> Unit,
+    onLogin: (BookSourcePart) -> Unit = {},
+    onRefresh: () -> Unit = {},
+    onEdit: (sourceUrl: String) -> Unit = {},
+    onToTop: (BookSourcePart) -> Unit = {},
+    onDelete: (BookSourcePart) -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var kinds by remember { mutableStateOf<List<ExploreKind>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
+    var showSourceMenu by remember { mutableStateOf(false) }
+
+    val infoMap = remember(source.bookSourceUrl) {
+        ExploreAdapter.exploreInfoMapList[source.bookSourceUrl]
+            ?: InfoMap(source.bookSourceUrl).also {
+                ExploreAdapter.exploreInfoMapList.put(source.bookSourceUrl, it)
+            }
+    }
+
+    val bookSource = remember(source.bookSourceUrl) {
+        mutableStateOf<io.legado.app.data.entities.BookSource?>(null)
+    }
+
+    suspend fun refreshKinds() {
+        isLoading = true
+        try {
+            withContext(IO) { source.clearExploreKindsCache() }
+            kinds = withContext(IO) { source.exploreKinds() }
+        } catch (_: Exception) {
+            kinds = emptyList()
+        }
+        isLoading = false
+    }
 
     LaunchedEffect(isExpanded) {
         if (isExpanded) {
@@ -326,6 +376,27 @@ private fun ExploreSourceItem(
                 kinds = emptyList()
             }
             isLoading = false
+        }
+    }
+
+    LaunchedEffect(source.bookSourceUrl) {
+        withContext(IO) {
+            bookSource.value = appDb.bookSourceDao.getBookSource(source.bookSourceUrl)
+        }
+    }
+
+    val sourceJsExtensions = remember(context, bookSource.value) {
+        bookSource.value?.let { bs ->
+            SourceLoginJsExtensions(
+                context as? androidx.appcompat.app.AppCompatActivity,
+                bs,
+                callback = object : SourceLoginJsExtensions.Callback {
+                    override fun upUiData(data: Map<String, Any?>?) {}
+                    override fun reUiView(deltaUp: Boolean) {
+                        scope.launch { refreshKinds() }
+                    }
+                }
+            )
         }
     }
 
@@ -365,6 +436,79 @@ private fun ExploreSourceItem(
             )
         }
 
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            IconButton(
+                onClick = { onSearchBook(source) },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = context.getString(R.string.search),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            if (source.hasLoginUrl) {
+                IconButton(
+                    onClick = { onLogin(source) },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = context.getString(R.string.login),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+            IconButton(
+                onClick = {
+                    scope.launch { refreshKinds() }
+                },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = context.getString(R.string.refresh),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            IconButton(
+                onClick = { showSourceMenu = true },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "更多",
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+
+        DropdownMenu(
+            expanded = showSourceMenu,
+            onDismissRequest = { showSourceMenu = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text(context.getString(R.string.edit)) },
+                onClick = { showSourceMenu = false; onEdit(source.bookSourceUrl) },
+                leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) }
+            )
+            DropdownMenuItem(
+                text = { Text(context.getString(R.string.to_top)) },
+                onClick = { showSourceMenu = false; onToTop(source) },
+                leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) }
+            )
+            DropdownMenuItem(
+                text = { Text(context.getString(R.string.delete)) },
+                onClick = { showSourceMenu = false; onDelete(source) },
+                leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) }
+            )
+        }
+
         AnimatedVisibility(visible = isExpanded && kinds.isNotEmpty()) {
             FlowRow(
                 modifier = Modifier
@@ -374,55 +518,70 @@ private fun ExploreSourceItem(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 kinds.forEach { kind ->
+                    val styleModifier = kind.style().toModifier()
                     when (kind.type) {
-                        ExploreKind.Type.url, ExploreKind.Type.button -> {
-                            ExploreKindChip(
-                                text = kind.title,
-                                onClick = {
-                                    if (kind.type == ExploreKind.Type.url) {
-                                        val url = kind.url ?: return@ExploreKindChip
+                        ExploreKind.Type.url -> {
+                            Box(modifier = styleModifier) {
+                                ExploreKindUrlChip(
+                                    kind = kind,
+                                    infoMap = infoMap,
+                                    source = bookSource.value,
+                                    onOpenExplore = { url ->
                                         if (kind.title.startsWith("ERROR:")) {
-                                            return@ExploreKindChip
+                                            return@ExploreKindUrlChip
                                         }
                                         onOpenExplore(source.bookSourceUrl, kind.title, url)
                                     }
-                                }
-                            )
-                        }
-                        ExploreKind.Type.toggle -> {
-                            val chars = kind.chars?.filterNotNull() ?: listOf("chars", "is null")
-                            var currentChar by remember {
-                                mutableStateOf(
-                                    kind.default ?: chars.firstOrNull() ?: ""
                                 )
                             }
-                            ExploreKindChip(
-                                text = "$currentChar${kind.title}",
-                                onClick = {
-                                    val currentIndex = chars.indexOf(currentChar)
-                                    val nextIndex = (currentIndex + 1) % chars.size
-                                    currentChar = chars.getOrNull(nextIndex) ?: ""
-                                }
-                            )
+                        }
+                        ExploreKind.Type.button -> {
+                            Box(modifier = styleModifier) {
+                                ExploreKindButtonChip(
+                                    kind = kind,
+                                    infoMap = infoMap,
+                                    source = bookSource.value,
+                                    sourceJsExtensions = sourceJsExtensions,
+                                    scope = scope,
+                                    onRefreshKinds = { scope.launch { refreshKinds() } }
+                                )
+                            }
+                        }
+                        ExploreKind.Type.toggle -> {
+                            Box(modifier = styleModifier) {
+                                ExploreKindToggleChip(
+                                    kind = kind,
+                                    infoMap = infoMap,
+                                    source = bookSource.value,
+                                    sourceJsExtensions = sourceJsExtensions,
+                                    scope = scope,
+                                    onRefreshKinds = { scope.launch { refreshKinds() } }
+                                )
+                            }
                         }
                         ExploreKind.Type.text -> {
-                            var textValue by remember { mutableStateOf("") }
-                            OutlinedTextField(
-                                value = textValue,
-                                onValueChange = { textValue = it },
-                                modifier = Modifier
-                                    .width(160.dp)
-                                    .padding(2.dp),
-                                placeholder = { Text(kind.title, fontSize = 12.sp) },
-                                singleLine = true,
-                                textStyle = MaterialTheme.typography.bodySmall
-                            )
+                            Box(modifier = styleModifier) {
+                                ExploreKindTextField(
+                                    kind = kind,
+                                    infoMap = infoMap,
+                                    source = bookSource.value,
+                                    sourceJsExtensions = sourceJsExtensions,
+                                    scope = scope,
+                                    onRefreshKinds = { scope.launch { refreshKinds() } }
+                                )
+                            }
                         }
                         ExploreKind.Type.select -> {
-                            ExploreKindChip(
-                                text = kind.title,
-                                onClick = {}
-                            )
+                            Box(modifier = styleModifier) {
+                                ExploreKindSelectField(
+                                    kind = kind,
+                                    infoMap = infoMap,
+                                    source = bookSource.value,
+                                    sourceJsExtensions = sourceJsExtensions,
+                                    scope = scope,
+                                    onRefreshKinds = { scope.launch { refreshKinds() } }
+                                )
+                            }
                         }
                     }
                 }
@@ -431,21 +590,370 @@ private fun ExploreSourceItem(
     }
 }
 
-@Composable
-private fun ExploreKindChip(
-    text: String,
-    onClick: () -> Unit
+private fun isQuotedLiteral(viewName: String?): Boolean {
+    return viewName != null && viewName.length in 3..19 && viewName.first() == '\'' && viewName.last() == '\''
+}
+
+private fun resolveViewName(viewName: String?, title: String): String {
+    if (viewName == null) return title
+    if (isQuotedLiteral(viewName)) {
+        return viewName.substring(1, viewName.length - 1)
+    }
+    return title
+}
+
+private suspend fun evalUiJs(jsStr: String, source: BaseSource?, infoMap: InfoMap): String? {
+    val src = source ?: return null
+    return try {
+        com.script.rhino.runScriptWithContext {
+            src.evalJS(jsStr) {
+                put("infoMap", infoMap)
+            }.toString()
+        }
+    } catch (_: Exception) {
+        null
+    }
+}
+
+private suspend fun evalButtonClick(
+    jsStr: String,
+    source: BaseSource?,
+    infoMap: InfoMap,
+    name: String,
+    java: SourceLoginJsExtensions?
 ) {
+    val src = source ?: return
+    try {
+        com.script.rhino.runScriptWithContext {
+            src.evalJS(jsStr) {
+                put("java", java)
+                put("infoMap", infoMap)
+            }
+        }
+    } catch (_: Exception) {
+    }
+}
+
+private suspend fun tryEvalViewName(
+    viewName: String?,
+    source: io.legado.app.data.entities.BookSource?,
+    infoMap: InfoMap,
+    fallback: String
+): String {
+    if (viewName == null) return fallback
+    if (isQuotedLiteral(viewName)) {
+        return viewName.substring(1, viewName.length - 1)
+    }
+    val result = withContext(IO) { evalUiJs(viewName, source, infoMap) }
+    return if (result.isNullOrEmpty()) "null" else result
+}
+
+@Composable
+private fun ExploreKindUrlChip(
+    kind: ExploreKind,
+    infoMap: InfoMap,
+    source: io.legado.app.data.entities.BookSource?,
+    onOpenExplore: (url: String) -> Unit
+) {
+    val scope = rememberCoroutineScope()
+    var displayText by remember { mutableStateOf(resolveViewName(kind.viewName, kind.title)) }
+
+    LaunchedEffect(kind.viewName) {
+        displayText = tryEvalViewName(kind.viewName, source, infoMap, kind.title)
+    }
+
     Text(
-        text = text,
+        text = displayText,
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer)
-            .clickable(onClick = onClick)
+            .clickable {
+                val url = kind.url ?: return@clickable
+                onOpenExplore(url)
+            }
             .padding(horizontal = 12.dp, vertical = 6.dp),
         color = MaterialTheme.colorScheme.onSecondaryContainer,
         style = MaterialTheme.typography.bodySmall,
         maxLines = 1,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
+        textAlign = kind.style().layout_justifySelf.toTextAlign()
     )
+}
+
+@Composable
+private fun ExploreKindButtonChip(
+    kind: ExploreKind,
+    infoMap: InfoMap,
+    source: io.legado.app.data.entities.BookSource?,
+    sourceJsExtensions: SourceLoginJsExtensions?,
+    scope: kotlinx.coroutines.CoroutineScope,
+    onRefreshKinds: () -> Unit = {}
+) {
+    var displayText by remember { mutableStateOf(resolveViewName(kind.viewName, kind.title)) }
+
+    LaunchedEffect(kind.viewName) {
+        displayText = tryEvalViewName(kind.viewName, source, infoMap, kind.title)
+    }
+
+    Text(
+        text = displayText,
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .clickable {
+                val action = kind.action?.takeIf { it.isNotBlank() } ?: return@clickable
+                scope.launch(IO) {
+                    evalButtonClick(action, source, infoMap, kind.title, sourceJsExtensions)
+                    onRefreshKinds()
+                }
+            }
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
+        style = MaterialTheme.typography.bodySmall,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        textAlign = kind.style().layout_justifySelf.toTextAlign()
+    )
+}
+
+@Composable
+private fun ExploreKindToggleChip(
+    kind: ExploreKind,
+    infoMap: InfoMap,
+    source: io.legado.app.data.entities.BookSource?,
+    sourceJsExtensions: SourceLoginJsExtensions?,
+    scope: kotlinx.coroutines.CoroutineScope,
+    onRefreshKinds: () -> Unit = {}
+) {
+    val chars = kind.chars?.filterNotNull() ?: listOf("chars", "is null")
+    val title = kind.title
+    val left = kind.style().layout_justifySelf != "right"
+
+    var currentChar by remember(kind.title) {
+        val infoV = infoMap[title]
+        mutableStateOf(
+            if (infoV.isNullOrEmpty()) {
+                (kind.default ?: chars.firstOrNull() ?: "").also { infoMap[title] = it }
+            } else {
+                infoV
+            }
+        )
+    }
+
+    var displayName by remember { mutableStateOf(resolveViewName(kind.viewName, title)) }
+
+    LaunchedEffect(kind.viewName) {
+        displayName = tryEvalViewName(kind.viewName, source, infoMap, title)
+    }
+
+    val displayText = if (left) "$currentChar$displayName" else "$displayName$currentChar"
+
+    Text(
+        text = displayText,
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .clickable {
+                val currentIndex = chars.indexOf(currentChar)
+                val nextIndex = (currentIndex + 1) % chars.size
+                currentChar = chars.getOrNull(nextIndex) ?: ""
+                infoMap[title] = currentChar
+                scope.launch(IO) {
+                    kind.action?.takeIf { it.isNotBlank() }?.let { action ->
+                        evalButtonClick(action, source, infoMap, title, sourceJsExtensions)
+                    }
+                    onRefreshKinds()
+                }
+            }
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        color = MaterialTheme.colorScheme.onSecondaryContainer,
+        style = MaterialTheme.typography.bodySmall,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        textAlign = kind.style().layout_justifySelf.toTextAlign()
+    )
+}
+
+@Composable
+private fun ExploreKindTextField(
+    kind: ExploreKind,
+    infoMap: InfoMap,
+    source: io.legado.app.data.entities.BookSource?,
+    sourceJsExtensions: SourceLoginJsExtensions?,
+    scope: kotlinx.coroutines.CoroutineScope,
+    onRefreshKinds: () -> Unit = {}
+) {
+    var hintText by remember { mutableStateOf(resolveViewName(kind.viewName, kind.title)) }
+
+    LaunchedEffect(kind.viewName) {
+        hintText = tryEvalViewName(kind.viewName, source, infoMap, kind.title)
+    }
+
+    var textValue by remember { mutableStateOf(infoMap[kind.title] ?: "") }
+    var actionJob by remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
+
+    Box(
+        modifier = Modifier
+            .height(32.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant),
+        contentAlignment = Alignment.Center
+    ) {
+        BasicTextField(
+            value = textValue,
+            onValueChange = { newValue ->
+                val old = textValue
+                textValue = newValue
+                infoMap[kind.title] = newValue
+                if (kind.action != null && newValue != old) {
+                    actionJob?.cancel()
+                    actionJob = scope.launch(IO) {
+                        delay(600)
+                        evalButtonClick(kind.action!!, source, infoMap, kind.title, sourceJsExtensions)
+                        onRefreshKinds()
+                    }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 0.dp),
+            singleLine = true,
+            textStyle = MaterialTheme.typography.bodySmall.copy(
+                color = MaterialTheme.colorScheme.onSurface
+            ),
+            decorationBox = { innerTextField ->
+                if (textValue.isEmpty()) {
+                    Text(
+                        text = hintText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                innerTextField()
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ExploreKindSelectField(
+    kind: ExploreKind,
+    infoMap: InfoMap,
+    source: io.legado.app.data.entities.BookSource?,
+    sourceJsExtensions: SourceLoginJsExtensions?,
+    scope: kotlinx.coroutines.CoroutineScope,
+    onRefreshKinds: () -> Unit = {}
+) {
+    val chars = kind.chars?.filterNotNull() ?: listOf("chars", "is null")
+    var isInitialized by remember { mutableStateOf(false) }
+
+    var selectedValue by remember(kind.title) {
+        val infoV = infoMap[kind.title]
+        mutableStateOf(
+            if (infoV.isNullOrEmpty()) {
+                (kind.default ?: chars.firstOrNull() ?: "").also { infoMap[kind.title] = it }
+            } else {
+                infoV
+            }
+        )
+    }
+
+    var showDropdown by remember { mutableStateOf(false) }
+
+    var label by remember { mutableStateOf(resolveViewName(kind.viewName, kind.title)) }
+
+    LaunchedEffect(kind.viewName) {
+        label = tryEvalViewName(kind.viewName, source, infoMap, kind.title)
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .height(32.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .clickable { showDropdown = true }
+            .padding(horizontal = 12.dp)
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = selectedValue,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            style = MaterialTheme.typography.bodySmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Spacer(modifier = Modifier.width(2.dp))
+        Icon(
+            imageVector = Icons.Default.ArrowDropDown,
+            contentDescription = null,
+            modifier = Modifier.size(14.dp),
+            tint = MaterialTheme.colorScheme.onSecondaryContainer
+        )
+    }
+
+    DropdownMenu(
+        expanded = showDropdown,
+        onDismissRequest = {
+            showDropdown = false
+            isInitialized = true
+        }
+    ) {
+        chars.forEach { char ->
+            DropdownMenuItem(
+                text = { Text(char) },
+                onClick = {
+                    selectedValue = char
+                    infoMap[kind.title] = char
+                    showDropdown = false
+                    isInitialized = true
+                    scope.launch(IO) {
+                        kind.action?.takeIf { it.isNotBlank() }?.let { action ->
+                            evalButtonClick(action, source, infoMap, kind.title, sourceJsExtensions)
+                        }
+                        onRefreshKinds()
+                    }
+                }
+            )
+        }
+    }
+}
+
+private fun String?.toTextAlign(): TextAlign {
+    return when (this) {
+        "flex_start" -> TextAlign.Start
+        "flex_end" -> TextAlign.End
+        "center" -> TextAlign.Center
+        else -> TextAlign.Center
+    }
+}
+
+private fun String?.toArrangement(): Arrangement.Horizontal {
+    return when (this) {
+        "flex_start" -> Arrangement.Start
+        "flex_end" -> Arrangement.End
+        "center" -> Arrangement.Center
+        else -> Arrangement.Start
+    }
+}
+
+private fun FlexChildStyle.toModifier(): Modifier {
+    var modifier: Modifier = Modifier
+    if (layout_flexBasisPercent > 0f) {
+        modifier = modifier.fillMaxWidth(layout_flexBasisPercent)
+    }
+    if (layout_wrapBefore) {
+        modifier = modifier.fillMaxWidth()
+    }
+    return modifier
 }
