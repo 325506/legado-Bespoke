@@ -11,7 +11,7 @@ import io.legado.app.data.entities.BookSourcePart
 import io.legado.app.ui.compose.booksource.edit.BookSourceEditComposeActivity
 import io.legado.app.ui.compose.booksource.debug.SourceDebugComposeActivity
 import io.legado.app.ui.compose.booksource.login.SourceLoginComposeActivity
-import io.legado.app.ui.book.search.SearchActivity
+import io.legado.app.ui.book.search.SearchComposeActivity
 import io.legado.app.ui.compose.base.ComposeActivity
 import io.legado.app.ui.compose.screens.booksource.BookSourceScreen
 import io.legado.app.ui.compose.screens.booksource.BookSourceViewModel
@@ -61,7 +61,7 @@ class BookSourceComposeActivity : ComposeActivity() {
                     }
                 },
                 onSearchBook = { source ->
-                    SearchActivity.start(this@BookSourceComposeActivity, source)
+                    SearchComposeActivity.start(this@BookSourceComposeActivity, source)
                 },
                 onExportSelection = { sources ->
                     exportSources(sources)

@@ -25,7 +25,7 @@ import io.legado.app.ui.book.group.GroupManageDialog
 import io.legado.app.ui.book.import.local.ImportBookComposeActivity
 import io.legado.app.ui.book.import.remote.RemoteBookActivity
 import io.legado.app.ui.book.manage.BookshelfManageActivity
-import io.legado.app.ui.book.search.SearchActivity
+import io.legado.app.ui.book.search.SearchComposeActivity
 import io.legado.app.ui.file.HandleFileContract
 import io.legado.app.ui.main.MainFragmentInterface
 import io.legado.app.ui.main.MainViewModel
@@ -96,7 +96,7 @@ abstract class BaseBookshelfFragment(layoutId: Int) : VMBaseFragment<BookshelfVi
         super.onCompatOptionsItemSelected(item)
         when (item.itemId) {
             R.id.menu_remote -> startActivity<RemoteBookActivity>()
-            R.id.menu_search -> startActivity<SearchActivity>()
+            R.id.menu_search -> startActivity<SearchComposeActivity>()
             R.id.menu_update_toc -> activityViewModel.upToc(books, onlyUpdateRead)
             R.id.menu_bookshelf_layout -> configBookshelf()
             R.id.menu_group_manage -> showDialogFragment<GroupManageDialog>()

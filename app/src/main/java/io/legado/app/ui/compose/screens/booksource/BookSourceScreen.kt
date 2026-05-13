@@ -26,7 +26,7 @@ import io.legado.app.R
 import io.legado.app.data.entities.BookSourcePart
 import io.legado.app.ui.book.source.edit.BookSourceEditActivity
 import io.legado.app.ui.book.source.debug.BookSourceDebugActivity
-import io.legado.app.ui.book.search.SearchActivity
+import io.legado.app.ui.book.search.SearchComposeActivity
 import io.legado.app.ui.compose.components.LegadoTopAppBar
 import io.legado.app.ui.compose.theme.LegadoTheme
 

@@ -8,7 +8,7 @@ import io.legado.app.base.VMBaseFragment
 import io.legado.app.data.entities.BookSourcePart
 import io.legado.app.databinding.FragmentExploreComposeBinding
 import io.legado.app.ui.book.explore.ExploreShowComposeActivity
-import io.legado.app.ui.book.search.SearchActivity
+import io.legado.app.ui.book.search.SearchComposeActivity
 import io.legado.app.ui.compose.booksource.edit.BookSourceEditComposeActivity
 import io.legado.app.ui.compose.booksource.login.SourceLoginComposeActivity
 import io.legado.app.ui.compose.screens.explore.ExploreScreen
@@ -54,7 +54,7 @@ class ExploreComposeFragment() : VMBaseFragment<ExploreViewModel>(R.layout.fragm
                         viewModel.deleteSource(source)
                     },
                     onSearchBook = { source ->
-                        SearchActivity.start(requireContext(), source)
+                        SearchComposeActivity.start(requireContext(), source)
                     },
                     onLogin = { source ->
                         startActivity<SourceLoginComposeActivity> {

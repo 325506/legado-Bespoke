@@ -74,7 +74,7 @@ import io.legado.app.ui.book.info.edit.BookInfoEditActivity
 import io.legado.app.ui.book.manga.ReadMangaActivity
 import io.legado.app.ui.book.read.ReadBookActivity
 import io.legado.app.ui.book.read.ReadBookActivity.Companion.RESULT_DELETED
-import io.legado.app.ui.book.search.SearchActivity
+import io.legado.app.ui.book.search.SearchComposeActivity
 import io.legado.app.model.SourceCallBack
 import io.legado.app.ui.association.OnLineImportActivity
 import io.legado.app.ui.book.source.edit.BookSourceEditActivity
@@ -676,7 +676,7 @@ class BookInfoActivity :
                             null,
                             result = kind
                         ) {
-                            SearchActivity.start(this@BookInfoActivity, source, kind)
+                            SearchComposeActivity.start(this@BookInfoActivity, source, kind)
                         }
                     },
                     { kind ->
@@ -841,7 +841,7 @@ class BookInfoActivity :
                     null,
                     result = book.author
                 ) {
-                    SearchActivity.start(this@BookInfoActivity, book.author)
+                    SearchComposeActivity.start(this@BookInfoActivity, book.author)
                 }
             }
         }
@@ -855,7 +855,7 @@ class BookInfoActivity :
                     null,
                     result = book.author
                 ) {
-                    SearchActivity.start(this@BookInfoActivity, book.author)
+                    SearchComposeActivity.start(this@BookInfoActivity, book.author)
                 }
             }
             true
@@ -870,7 +870,7 @@ class BookInfoActivity :
                     null,
                     result = book.name
                 ) {
-                    SearchActivity.start(this@BookInfoActivity, book.name)
+                    SearchComposeActivity.start(this@BookInfoActivity, book.name)
                 }
             }
         }
@@ -884,7 +884,7 @@ class BookInfoActivity :
                     null,
                     result = book.name
                 ) {
-                    SearchActivity.start(this@BookInfoActivity, book.name)
+                    SearchComposeActivity.start(this@BookInfoActivity, book.name)
                 }
             }
             true

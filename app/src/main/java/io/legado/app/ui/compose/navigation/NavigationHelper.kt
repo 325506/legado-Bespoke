@@ -5,7 +5,7 @@ import android.content.Intent
 import androidx.navigation.NavHostController
 import io.legado.app.ui.book.read.ReadBookActivity
 import io.legado.app.ui.book.info.BookInfoActivity
-import io.legado.app.ui.book.search.SearchActivity
+import io.legado.app.ui.book.search.SearchComposeActivity
 import io.legado.app.ui.config.ConfigComposeActivity
 import io.legado.app.ui.about.AboutActivity
 import io.legado.app.ui.book.manage.BookshelfManageActivity
@@ -62,7 +62,7 @@ object NavigationHelper {
     }
 
     fun navigateToBookSearch(context: Context) {
-        val intent = Intent(context, SearchActivity::class.java)
+        val intent = Intent(context, SearchComposeActivity::class.java)
         context.startActivity(intent)
     }
 

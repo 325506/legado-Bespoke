@@ -231,6 +231,7 @@ dependencies {
     //Jetpack Compose
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
+    implementation(libs.compose.runtime.livedata)
     debugImplementation(libs.compose.ui.tooling)
 
     //room sql语句不高亮解决方法https://issuetracker.google.com/issues/234612964#comment6

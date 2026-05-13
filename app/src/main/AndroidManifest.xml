@@ -244,6 +244,9 @@
         <activity
             android:name=".ui.book.search.SearchActivity"
             android:launchMode="standard" />
+        <activity
+            android:name=".ui.book.search.SearchComposeActivity"
+            android:launchMode="standard" />
         <!-- 关于界面 -->
         <activity
             android:name=".ui.about.AboutActivity"
