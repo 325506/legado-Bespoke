@@ -1,6 +1,7 @@
 package io.legado.app.ui.compose.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -8,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import io.legado.app.ui.compose.screens.main.MainScreen
 import io.legado.app.ui.compose.screens.bookshelf.BookshelfScreen
+import io.legado.app.ui.compose.screens.bookshelf.BookshelfViewModel
 import io.legado.app.ui.compose.screens.explore.ExploreScreen
 import io.legado.app.ui.compose.screens.rss.RssScreen
 import io.legado.app.ui.compose.screens.my.MyConfigScreen
@@ -30,7 +32,8 @@ fun LegadoNavHost(
         }
 
         composable(Screen.Bookshelf.route) {
-            BookshelfScreen(navController)
+            val viewModel: BookshelfViewModel = viewModel()
+            BookshelfScreen(viewModel)
         }
 
         composable(Screen.Explore.route) {

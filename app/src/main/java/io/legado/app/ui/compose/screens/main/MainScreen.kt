@@ -14,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.legado.app.ui.compose.components.LegadoBottomNavigation
 import io.legado.app.ui.compose.components.LegadoBottomNavItem
 import io.legado.app.ui.compose.components.LegadoTopAppBar
 import io.legado.app.ui.compose.screens.bookshelf.BookshelfScreen
+import io.legado.app.ui.compose.screens.bookshelf.BookshelfViewModel
 import io.legado.app.ui.compose.screens.explore.ExploreScreen
 import io.legado.app.ui.compose.screens.my.MyConfigScreen
 import io.legado.app.ui.compose.screens.rss.RssScreen
@@ -84,7 +86,10 @@ fun MainScreen(navController: NavHostController) {
             contentAlignment = Alignment.Center
         ) {
             when (selectedTab) {
-                0 -> BookshelfScreen(navController)
+                0 -> {
+                    val bookshelfViewModel: BookshelfViewModel = viewModel()
+                    BookshelfScreen(bookshelfViewModel)
+                }
                 1 -> ExploreScreen(navController)
                 2 -> RssScreen(navController)
                 3 -> MyConfigScreen(navController)

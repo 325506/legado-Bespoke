@@ -37,9 +37,7 @@ import io.legado.app.ui.about.CrashLogsDialog
 import io.legado.app.ui.association.ImportBookSourceDialog
 import io.legado.app.ui.association.ImportReplaceRuleDialog
 import io.legado.app.ui.association.ImportRssSourceDialog
-import io.legado.app.ui.main.bookshelf.BaseBookshelfFragment
-import io.legado.app.ui.main.bookshelf.style1.BookshelfFragment1
-import io.legado.app.ui.main.bookshelf.style2.BookshelfFragment2
+import io.legado.app.ui.main.bookshelf.BookshelfComposeFragment
 import io.legado.app.ui.main.explore.ExploreComposeFragment
 import io.legado.app.ui.main.my.MyFragment
 import io.legado.app.ui.main.rss.RssComposeFragment
@@ -103,8 +101,8 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                 binding.viewPagerMain.currentItem = 0
                 return@addCallback
             }
-            (fragmentMap[getFragmentId(0)] as? BookshelfFragment2)?.let {
-                if (it.back()) {
+            (fragmentMap[getFragmentId(0)] as? BookshelfComposeFragment)?.let {
+                if (it.backToRoot()) {
                     return@addCallback
                 }
             }
@@ -175,7 +173,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                 if (System.currentTimeMillis() - bookshelfReselected > 300) {
                     bookshelfReselected = System.currentTimeMillis()
                 } else {
-                    (fragmentMap[getFragmentId(0)] as? BaseBookshelfFragment)?.gotoTop()
+                    (fragmentMap[getFragmentId(0)] as? BookshelfComposeFragment)?.gotoTop()
                 }
             }
 
@@ -349,8 +347,8 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
      * 如果重启太快fragment不会重建,这里更新一下书架的排序
      */
     override fun recreate() {
-        (fragmentMap[getFragmentId(0)] as? BaseBookshelfFragment)?.run {
-            upSort()
+        (fragmentMap[getFragmentId(0)] as? BookshelfComposeFragment)?.run {
+            gotoTop()
         }
         super.recreate()
     }
@@ -423,7 +421,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
     private fun getFragmentId(position: Int): Int {
         val id = realPositions[position]
         if (id == idBookshelf) {
-            return if (AppConfig.bookGroupStyle == 1) idBookshelf2 else idBookshelf1
+            return idBookshelf1
         }
         return id
     }
@@ -449,8 +447,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             val position = (any as MainFragmentInterface).position
                 ?: return POSITION_NONE
             val fragmentId = getId(position)
-            if ((fragmentId == idBookshelf1 && any is BookshelfFragment1)
-                || (fragmentId == idBookshelf2 && any is BookshelfFragment2)
+            if ((fragmentId == idBookshelf1 && any is BookshelfComposeFragment)
                 || (fragmentId == idExplore && any is ExploreComposeFragment)
                 || (fragmentId == idRss && any is RssComposeFragment)
                 || (fragmentId == idMy && any is MyFragment)
@@ -462,8 +459,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
 
         override fun getItem(position: Int): Fragment {
             return when (getId(position)) {
-                idBookshelf1 -> BookshelfFragment1(position)
-                idBookshelf2 -> BookshelfFragment2(position)
+                idBookshelf1 -> BookshelfComposeFragment(position)
                 idExplore -> ExploreComposeFragment(position)
                 idRss -> RssComposeFragment(position)
                 else -> MyFragment(position)
