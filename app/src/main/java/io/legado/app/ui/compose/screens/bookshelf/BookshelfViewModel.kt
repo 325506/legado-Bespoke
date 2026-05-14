@@ -52,6 +52,17 @@ import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 import kotlin.math.max
 
+data class LayoutConfig(
+    val bookshelfLayout: Int,
+    val bookGroupStyle: Int,
+    val showUnread: Boolean,
+    val showLastUpdateTime: Boolean,
+    val showWaitUpCount: Boolean,
+    val bookshelfMargin: Int,
+    val showBookname: Int,
+    val bookshelfSort: Int
+)
+
 class BookshelfViewModel(application: Application) : BaseViewModel(application) {
 
     private val _groupId = MutableStateFlow(BookGroup.IdRoot)
@@ -60,14 +71,41 @@ class BookshelfViewModel(application: Application) : BaseViewModel(application) 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
-    val bookshelfLayout: Int get() = AppConfig.bookshelfLayout
-    val bookGroupStyle: Int get() = AppConfig.bookGroupStyle
-    val showUnread: Boolean get() = AppConfig.showUnread
-    val showLastUpdateTime: Boolean get() = AppConfig.showLastUpdateTime
-    val showWaitUpCount: Boolean get() = AppConfig.showWaitUpCount
-    val bookshelfMargin: Int get() = AppConfig.bookshelfMargin
-    val showBookname: Int get() = AppConfig.showBookname
-    val bookshelfSort: Int get() = AppConfig.bookshelfSort
+    private val _layoutConfig = MutableStateFlow(
+        LayoutConfig(
+            bookshelfLayout = AppConfig.bookshelfLayout,
+            bookGroupStyle = AppConfig.bookGroupStyle,
+            showUnread = AppConfig.showUnread,
+            showLastUpdateTime = AppConfig.showLastUpdateTime,
+            showWaitUpCount = AppConfig.showWaitUpCount,
+            bookshelfMargin = AppConfig.bookshelfMargin,
+            showBookname = AppConfig.showBookname,
+            bookshelfSort = AppConfig.bookshelfSort
+        )
+    )
+    val layoutConfig: StateFlow<LayoutConfig> = _layoutConfig.asStateFlow()
+
+    val bookshelfLayout: Int get() = _layoutConfig.value.bookshelfLayout
+    val bookGroupStyle: Int get() = _layoutConfig.value.bookGroupStyle
+    val showUnread: Boolean get() = _layoutConfig.value.showUnread
+    val showLastUpdateTime: Boolean get() = _layoutConfig.value.showLastUpdateTime
+    val showWaitUpCount: Boolean get() = _layoutConfig.value.showWaitUpCount
+    val bookshelfMargin: Int get() = _layoutConfig.value.bookshelfMargin
+    val showBookname: Int get() = _layoutConfig.value.showBookname
+    val bookshelfSort: Int get() = _layoutConfig.value.bookshelfSort
+
+    fun updateLayoutConfig() {
+        _layoutConfig.value = LayoutConfig(
+            bookshelfLayout = AppConfig.bookshelfLayout,
+            bookGroupStyle = AppConfig.bookGroupStyle,
+            showUnread = AppConfig.showUnread,
+            showLastUpdateTime = AppConfig.showLastUpdateTime,
+            showWaitUpCount = AppConfig.showWaitUpCount,
+            bookshelfMargin = AppConfig.bookshelfMargin,
+            showBookname = AppConfig.showBookname,
+            bookshelfSort = AppConfig.bookshelfSort
+        )
+    }
 
     var addBookJob: Coroutine<*>? = null
     val addBookProgressLiveData = MutableLiveData(-1)

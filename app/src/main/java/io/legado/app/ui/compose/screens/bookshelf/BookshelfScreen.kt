@@ -98,8 +98,12 @@ fun BookshelfScreen(
     val books by viewModel.books.collectAsState()
     val groupId by viewModel.groupId.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
-    val bookshelfLayout = viewModel.bookshelfLayout
-    val bookGroupStyle = viewModel.bookGroupStyle
+    val layoutConfig by viewModel.layoutConfig.collectAsState()
+    val bookshelfLayout = layoutConfig.bookshelfLayout
+    val bookGroupStyle = layoutConfig.bookGroupStyle
+    val showUnread = layoutConfig.showUnread
+    val showLastUpdateTime = layoutConfig.showLastUpdateTime
+    val showBookname = layoutConfig.showBookname
 
     var showMenu by remember { mutableStateOf(false) }
 
@@ -123,6 +127,9 @@ fun BookshelfScreen(
             groupId = groupId,
             isRefreshing = isRefreshing,
             bookshelfLayout = bookshelfLayout,
+            showUnread = showUnread,
+            showLastUpdateTime = showLastUpdateTime,
+            showBookname = showBookname,
             showMenu = showMenu,
             onShowMenuChange = { showMenu = it },
             onBookClick = onBookClick,
@@ -143,6 +150,9 @@ fun BookshelfScreen(
             bookGroups = bookGroups,
             isRefreshing = isRefreshing,
             bookshelfLayout = bookshelfLayout,
+            showUnread = showUnread,
+            showLastUpdateTime = showLastUpdateTime,
+            showBookname = showBookname,
             showMenu = showMenu,
             onShowMenuChange = { showMenu = it },
             onBookClick = onBookClick,
@@ -165,6 +175,9 @@ private fun BookshelfStyle1(
     bookGroups: List<BookGroup>,
     isRefreshing: Boolean,
     bookshelfLayout: Int,
+    showUnread: Boolean,
+    showLastUpdateTime: Boolean,
+    showBookname: Int,
     showMenu: Boolean,
     onShowMenuChange: (Boolean) -> Unit,
     onBookClick: (Book) -> Unit,
@@ -267,6 +280,9 @@ private fun BookshelfStyle1(
                     enableRefresh = group.enableRefresh,
                     onlyUpdateRead = group.onlyUpdateRead,
                     bookshelfLayout = bookshelfLayout,
+                    showUnread = showUnread,
+                    showLastUpdateTime = showLastUpdateTime,
+                    showBookname = showBookname,
                     onBookClick = onBookClick,
                     onBookLongClick = onBookLongClick,
                     onUpdateToc = onUpdateToc
@@ -284,6 +300,9 @@ private fun BooksPage(
     enableRefresh: Boolean,
     onlyUpdateRead: Boolean,
     bookshelfLayout: Int,
+    showUnread: Boolean,
+    showLastUpdateTime: Boolean,
+    showBookname: Int,
     onBookClick: (Book) -> Unit,
     onBookLongClick: (Book) -> Unit,
     onUpdateToc: (List<Book>, Boolean) -> Unit
@@ -342,8 +361,8 @@ private fun BooksPage(
                     items(sortedBooks, key = { it.bookUrl }) { book ->
                         BookGridItem(
                             book = book,
-                            showBookname = AppConfig.showBookname,
-                            showUnread = AppConfig.showUnread,
+                            showBookname = showBookname,
+                            showUnread = showUnread,
                             onClick = { onBookClick(book) },
                             onLongClick = { onBookLongClick(book) }
                         )
@@ -357,8 +376,8 @@ private fun BooksPage(
                         BookListItem(
                             book = book,
                             compact = bookshelfLayout == 1,
-                            showUnread = AppConfig.showUnread,
-                            showLastUpdateTime = AppConfig.showLastUpdateTime,
+                            showUnread = showUnread,
+                            showLastUpdateTime = showLastUpdateTime,
                             onClick = { onBookClick(book) },
                             onLongClick = { onBookLongClick(book) }
                         )
@@ -379,6 +398,9 @@ private fun BookshelfStyle2(
     groupId: Long,
     isRefreshing: Boolean,
     bookshelfLayout: Int,
+    showUnread: Boolean,
+    showLastUpdateTime: Boolean,
+    showBookname: Int,
     showMenu: Boolean,
     onShowMenuChange: (Boolean) -> Unit,
     onBookClick: (Book) -> Unit,
@@ -498,14 +520,14 @@ private fun BookshelfStyle2(
                             when (item) {
                                 is BookGroup -> GroupGridItem(
                                     group = item,
-                                    showBookname = viewModel.showBookname,
+                                    showBookname = showBookname,
                                     onClick = { onGroupClick(item) },
                                     onLongClick = { onGroupLongClick(item) }
                                 )
                                 is Book -> BookGridItem(
                                     book = item,
-                                    showBookname = viewModel.showBookname,
-                                    showUnread = viewModel.showUnread,
+                                    showBookname = showBookname,
+                                    showUnread = showUnread,
                                     onClick = { onBookClick(item) },
                                     onLongClick = { onBookLongClick(item) }
                                 )

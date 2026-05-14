@@ -230,26 +230,24 @@ class BookshelfComposeFragment() :
             okButton {
                 alertBinding.apply {
                     var notifyMain = false
-                    var recreate = false
+                    var layoutChanged = false
                     if (AppConfig.bookGroupStyle != spGroupStyle.selectedItemPosition) {
                         AppConfig.bookGroupStyle = spGroupStyle.selectedItemPosition
                         notifyMain = true
                     }
                     if (showBookname != rgbLayout.getCheckedIndex()) {
                         AppConfig.showBookname = rgbLayout.getCheckedIndex()
-                        recreate = true
+                        layoutChanged = true
                     }
                     if (AppConfig.bookshelfMargin != margin.progress) {
                         AppConfig.bookshelfMargin = margin.progress
-                        recreate = true
+                        layoutChanged = true
                     }
                     if (AppConfig.showUnread != swShowUnread.isChecked) {
                         AppConfig.showUnread = swShowUnread.isChecked
-                        postEvent(EventBus.BOOKSHELF_REFRESH, "")
                     }
                     if (AppConfig.showLastUpdateTime != swShowLastUpdateTime.isChecked) {
                         AppConfig.showLastUpdateTime = swShowLastUpdateTime.isChecked
-                        postEvent(EventBus.BOOKSHELF_REFRESH, "")
                     }
                     if (AppConfig.showWaitUpCount != swShowWaitUpBooks.isChecked) {
                         AppConfig.showWaitUpCount = swShowWaitUpBooks.isChecked
@@ -257,18 +255,18 @@ class BookshelfComposeFragment() :
                     }
                     if (AppConfig.showBookshelfFastScroller != swShowBookshelfFastScroller.isChecked) {
                         AppConfig.showBookshelfFastScroller = swShowBookshelfFastScroller.isChecked
-                        postEvent(EventBus.BOOKSHELF_REFRESH, "")
                     }
                     if (bookshelfSort != rgSort.getCheckedIndex()) {
                         AppConfig.bookshelfSort = rgSort.getCheckedIndex()
                     }
                     if (bookshelfLayout != rgLayout.getCheckedIndex()) {
                         AppConfig.bookshelfLayout = rgLayout.getCheckedIndex()
-                        recreate = true
+                        layoutChanged = true
                     }
-                    if (recreate) {
-                        postEvent(EventBus.RECREATE, "")
-                    } else if (notifyMain) {
+                    if (layoutChanged) {
+                        viewModel.updateLayoutConfig()
+                    }
+                    if (notifyMain) {
                         postEvent(EventBus.NOTIFY_MAIN, false)
                     }
                 }
