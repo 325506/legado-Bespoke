@@ -220,7 +220,7 @@ fun SearchScreen(
         }
     }
 
-    val showInputHelp = isSearchFieldFocused && isSearching != true && searchBooks?.isEmpty() != false
+    val showInputHelp = isSearching != true && searchBooks?.isEmpty() != false
 
     fun isInBookshelf(book: SearchBook): Boolean {
         val name = book.name

@@ -38,7 +38,7 @@ class SearchComposeActivity : ComposeActivity() {
                         }
                     },
                     onSourceManage = {
-                        startActivity<io.legado.app.ui.book.source.manage.BookSourceActivity>()
+                        startActivity<io.legado.app.ui.compose.booksource.BookSourceComposeActivity>()
                     }
                 )
             }
