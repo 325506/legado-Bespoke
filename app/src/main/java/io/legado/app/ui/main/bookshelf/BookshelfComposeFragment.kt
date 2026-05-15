@@ -18,7 +18,7 @@ import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.dialogs.alert
 import io.legado.app.ui.about.AppLogDialog
 import io.legado.app.ui.book.group.GroupManageDialog
-import io.legado.app.ui.book.info.BookInfoActivity
+import io.legado.app.ui.book.info.BookInfoComposeActivity
 import io.legado.app.ui.compose.dialog.BookshelfConfigDialog
 import io.legado.app.ui.compose.screens.bookshelf.BookshelfScreen
 import io.legado.app.ui.compose.screens.bookshelf.BookshelfViewModel
@@ -95,13 +95,13 @@ class BookshelfComposeFragment() :
                 BookshelfScreen(
                     viewModel = viewModel,
                     onBookClick = { book ->
-                        requireContext().startActivityForBook(book)
-                    },
-                    onBookLongClick = { book ->
-                        startActivity<BookInfoActivity> {
+                        startActivity<BookInfoComposeActivity> {
                             putExtra("name", book.name)
                             putExtra("author", book.author)
                         }
+                    },
+                    onBookLongClick = { book ->
+                        requireContext().startActivityForBook(book)
                     },
                     onGroupClick = { group ->
                         viewModel.setGroupId(group.groupId)

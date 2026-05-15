@@ -122,13 +122,13 @@ class BooksAdapterGrid(context: Context, private val callBack: CallBack) :
         holder.itemView.apply {
             setOnClickListener {
                 getItem(holder.layoutPosition)?.let {
-                    callBack.open(it)
+                    callBack.openBookInfo(it)
                 }
             }
 
             onLongClick {
                 getItem(holder.layoutPosition)?.let {
-                    callBack.openBookInfo(it)
+                    callBack.open(it)
                 }
             }
         }

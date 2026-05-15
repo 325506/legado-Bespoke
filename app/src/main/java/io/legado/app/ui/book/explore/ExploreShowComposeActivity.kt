@@ -30,7 +30,7 @@ class ExploreShowComposeActivity : ComposeActivity() {
                     exploreName = exploreName,
                     onBack = { finish() },
                     onBookClick = { book ->
-                        startActivity<io.legado.app.ui.book.info.BookInfoActivity> {
+                        startActivity<io.legado.app.ui.book.info.BookInfoComposeActivity> {
                             putExtra("name", book.name)
                             putExtra("author", book.author)
                             putExtra("bookUrl", book.bookUrl)

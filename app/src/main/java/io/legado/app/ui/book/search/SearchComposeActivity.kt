@@ -31,7 +31,7 @@ class SearchComposeActivity : ComposeActivity() {
                     initialSearchScope = searchScope,
                     onBack = { finish() },
                     onBookClick = { name, author, bookUrl ->
-                        startActivity<io.legado.app.ui.book.info.BookInfoActivity> {
+                        startActivity<io.legado.app.ui.book.info.BookInfoComposeActivity> {
                             putExtra("name", name)
                             putExtra("author", author)
                             putExtra("bookUrl", bookUrl)

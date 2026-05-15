@@ -73,7 +73,7 @@ import io.legado.app.ui.about.AppLogDialog
 import io.legado.app.ui.book.bookmark.BookmarkDialog
 import io.legado.app.ui.book.changesource.ChangeBookSourceDialog
 import io.legado.app.ui.book.changesource.ChangeChapterSourceDialog
-import io.legado.app.ui.book.info.BookInfoActivity
+import io.legado.app.ui.book.info.BookInfoComposeActivity
 import io.legado.app.ui.book.read.config.AutoReadDialog
 import io.legado.app.ui.book.read.config.BgTextConfigDialog.Companion.BG_COLOR
 import io.legado.app.ui.book.read.config.BgTextConfigDialog.Companion.TEXT_ACCENT_COLOR
@@ -206,7 +206,7 @@ class ReadBookActivity : BaseReadBookActivity(),
             }
         }
     private val bookInfoActivity =
-        registerForActivityResult(StartActivityContract(BookInfoActivity::class.java)) {
+        registerForActivityResult(StartActivityContract(BookInfoComposeActivity::class.java)) {
             if (it.resultCode == RESULT_OK) {
                 setResult(RESULT_DELETED)
                 super.finish()

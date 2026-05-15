@@ -12,7 +12,7 @@ import io.legado.app.base.VMBaseActivity
 import io.legado.app.data.entities.SearchBook
 import io.legado.app.databinding.ActivityExploreShowBinding
 import io.legado.app.databinding.ViewLoadMoreBinding
-import io.legado.app.ui.book.info.BookInfoActivity
+import io.legado.app.ui.book.info.BookInfoComposeActivity
 import io.legado.app.ui.widget.number.NumberPickerDialog
 import io.legado.app.ui.widget.recycler.LoadMoreView
 import io.legado.app.ui.widget.recycler.VerticalDivider
@@ -167,7 +167,7 @@ class ExploreShowActivity : VMBaseActivity<ActivityExploreShowBinding, ExploreSh
     }
 
     override fun showBookInfo(book: SearchBook) {
-        startActivity<BookInfoActivity> {
+        startActivity<BookInfoComposeActivity> {
             putExtra("name", book.name)
             putExtra("author", book.author)
             putExtra("bookUrl", book.bookUrl)

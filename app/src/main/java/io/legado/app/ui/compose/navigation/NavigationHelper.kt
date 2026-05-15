@@ -4,12 +4,12 @@ import android.content.Context
 import android.content.Intent
 import androidx.navigation.NavHostController
 import io.legado.app.ui.book.read.ReadBookActivity
-import io.legado.app.ui.book.info.BookInfoActivity
+import io.legado.app.ui.book.info.BookInfoComposeActivity
 import io.legado.app.ui.book.search.SearchComposeActivity
 import io.legado.app.ui.config.ConfigComposeActivity
 import io.legado.app.ui.about.AboutActivity
 import io.legado.app.ui.book.manage.BookshelfManageActivity
-import io.legado.app.ui.book.toc.TocActivity
+import io.legado.app.ui.book.toc.TocComposeActivity
 import io.legado.app.ui.book.bookmark.AllBookmarkActivity
 import io.legado.app.ui.book.cache.CacheActivity
 import io.legado.app.ui.file.FileManageComposeActivity
@@ -55,7 +55,7 @@ object NavigationHelper {
     }
 
     fun navigateToBookInfo(context: Context, bookUrl: String) {
-        val intent = Intent(context, BookInfoActivity::class.java).apply {
+        val intent = Intent(context, BookInfoComposeActivity::class.java).apply {
             putExtra("bookUrl", bookUrl)
         }
         context.startActivity(intent)
@@ -82,7 +82,7 @@ object NavigationHelper {
     }
 
     fun navigateToToc(context: Context, bookUrl: String) {
-        val intent = Intent(context, TocActivity::class.java).apply {
+        val intent = Intent(context, TocComposeActivity::class.java).apply {
             putExtra("bookUrl", bookUrl)
         }
         context.startActivity(intent)

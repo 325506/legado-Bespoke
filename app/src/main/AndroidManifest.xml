@@ -165,6 +165,10 @@
         <activity
             android:name=".ui.book.info.BookInfoActivity"
             android:launchMode="singleTop" />
+        <!-- 书籍详情页(Compose) -->
+        <activity
+            android:name=".ui.book.info.BookInfoComposeActivity"
+            android:launchMode="singleTop" />
         <!-- 书籍信息编辑 -->
         <activity
             android:name=".ui.book.info.edit.BookInfoEditActivity"
@@ -290,6 +294,11 @@
         <!-- 目录 -->
         <activity
             android:name=".ui.book.toc.TocActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="behind" />
+        <!-- 目录(Compose) -->
+        <activity
+            android:name=".ui.book.toc.TocComposeActivity"
             android:launchMode="singleTop"
             android:screenOrientation="behind" />
         <!-- 正文搜索 -->
