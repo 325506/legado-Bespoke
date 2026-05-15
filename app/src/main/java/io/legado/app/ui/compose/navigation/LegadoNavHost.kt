@@ -28,7 +28,7 @@ fun LegadoNavHost(
         startDestination = startDestination
     ) {
         composable(Screen.Main.route) {
-            MainScreen(navController)
+            MainScreen()
         }
 
         composable(Screen.Bookshelf.route) {
